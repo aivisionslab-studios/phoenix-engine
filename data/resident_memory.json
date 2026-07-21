@@ -1,0 +1,27 @@
+{
+  "machine": {
+    "gpu": "AMD Radeon RX 580 2048SP",
+    "ram": "32608 MB",
+    "vram": "8170 MB"
+  },
+  "history": [
+    {
+      "action": "installed_foundation_runtime"
+    },
+    {
+      "action": "installed_chat"
+    },
+    {
+      "action": "installed_foundation_runtime"
+    },
+    {
+      "action": "installed_chat"
+    },
+    {
+      "action": "installed_foundation_runtime"
+    },
+    {
+      "action": "installed_chat"
+    }
+  ]
+}

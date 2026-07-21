@@ -1,0 +1,159 @@
+{
+  "git": {
+    "name": "Git",
+    "provider": "winget",
+    "winget_id": "Git.Git",
+    "git_url": "https://github.com/git-for-windows/git"
+  },
+  "docker": {
+    "name": "Docker Desktop",
+    "provider": "winget",
+    "winget_id": "Docker.DockerDesktop",
+    "git_url": "https://github.com/docker/docker-install"
+  },
+  "python": {
+    "name": "Python 3.12",
+    "provider": "winget",
+    "winget_id": "Python.Python.3.12",
+    "git_url": "https://github.com/python/cpython"
+  },
+  "vscode": {
+    "name": "VS Code",
+    "provider": "winget",
+    "winget_id": "Microsoft.VisualStudioCode",
+    "git_url": "https://github.com/microsoft/vscode"
+  },
+  "vulkan_sdk": {
+    "name": "Vulkan SDK",
+    "provider": "winget",
+    "winget_id": "KhronosGroup.VulkanSDK",
+    "git_url": "https://github.com/KhronosGroup/Vulkan-Docs"
+  },
+  "cmake": {
+    "name": "CMake",
+    "provider": "winget",
+    "winget_id": "Kitware.CMake",
+    "git_url": "https://github.com/Kitware/CMake"
+  },
+  "vs_buildtools": {
+    "name": "VS Build Tools",
+    "provider": "winget",
+    "winget_id": "Microsoft.VisualStudio.2022.BuildTools",
+    "git_url": "https://github.com/microsoft/vswhere"
+  },
+  "ffmpeg": {
+    "name": "FFmpeg",
+    "provider": "winget",
+    "winget_id": "Gyan.FFmpeg",
+    "git_url": "https://github.com/FFmpeg/FFmpeg"
+  },
+  "tesseract": {
+    "name": "Tesseract OCR",
+    "provider": "winget",
+    "winget_id": "UB-Mannheim.TesseractOCR",
+    "git_url": "https://github.com/tesseract-ocr/tesseract"
+  },
+  "nodejs": {
+    "name": "Node.js LTS",
+    "provider": "winget",
+    "winget_id": "OpenJS.NodeJS.LTS",
+    "git_url": "https://github.com/nodejs/node"
+  },
+  "llama_cpp": {
+    "name": "llama.cpp",
+    "provider": "git",
+    "url": "https://github.com/ggml-org/llama.cpp",
+    "docker_image": "ollama/ollama"
+  },
+  "stable_diffusion_cpp": {
+    "name": "stable-diffusion.cpp",
+    "provider": "git",
+    "url": "https://github.com/leejet/stable-diffusion.cpp"
+  },
+  "comfyui": {
+    "name": "ComfyUI",
+    "provider": "git",
+    "url": "https://github.com/comfyanonymous/ComfyUI"
+  },
+  "ollama": {
+    "name": "Ollama",
+    "provider": "docker",
+    "image": "ollama/ollama:latest",
+    "ports": [
+      "11434:11434"
+    ],
+    "volumes": [
+      "ollama:/root/.ollama"
+    ],
+    "restart": "unless-stopped",
+    "winget_id": "Ollama.Ollama",
+    "git_url": "https://github.com/ollama/ollama"
+  },
+  "open_webui": {
+    "name": "Open WebUI",
+    "provider": "docker",
+    "image": "ghcr.io/open-webui/open-webui:main",
+    "ports": [
+      "3000:8080"
+    ],
+    "volumes": [
+      "open-webui:/app/backend/data"
+    ],
+    "restart": "unless-stopped",
+    "environment": {
+      "OLLAMA_BASE_URL": "http://host.docker.internal:11434"
+    },
+    "git_url": "https://github.com/open-webui/open-webui"
+  },
+  "searxng": {
+    "name": "SearXNG",
+    "provider": "docker",
+    "image": "searxng/searxng:latest",
+    "ports": [
+      "8080:8080"
+    ],
+    "git_url": "https://github.com/searxng/searxng"
+  },
+  "chromadb": {
+    "name": "ChromaDB",
+    "provider": "docker",
+    "image": "chromadb/chroma:latest",
+    "ports": [
+      "8001:8000"
+    ],
+    "volumes": [
+      "chroma_data:/chroma/chroma"
+    ],
+    "git_url": "https://github.com/chroma-core/chroma"
+  },
+  "whisper_cpp": {
+    "name": "Whisper.cpp",
+    "provider": "git",
+    "url": "https://github.com/ggml-org/whisper.cpp",
+    "verify_cmd": "whisper-cli --version"
+  },
+  "piper": {
+    "name": "Piper TTS",
+    "provider": "git",
+    "url": "https://github.com/rhasspy/piper",
+    "docker_image": "rhasspy/wyoming-piper:latest",
+    "verify_cmd": "piper --version",
+    "models_url": "https://huggingface.co/rhasspy/piper-voices"
+  },
+  "applio": {
+    "name": "Applio (RVC)",
+    "provider": "git",
+    "url": "https://github.com/IAHispano/Applio"
+  },
+  "rvc": {
+    "name": "RVC Project",
+    "provider": "git",
+    "url": "https://github.com/RVC-Project/Retrieval-based-Voice-Conversion-WebUI"
+  },
+  "xtts": {
+    "name": "XTTS v2 (Coqui)",
+    "provider": "git",
+    "url": "https://github.com/coqui-ai/TTS",
+    "pip_package": "TTS"
+  }
+}

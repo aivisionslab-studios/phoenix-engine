@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phoenix Engine v3.0 - Mission Control</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+    --bg: #0b0d10;
+    --panel: #14181d;
+    --border: #262d35;
+    --text: #e7e7e7;
+    --dim: #8d98a5;
+    --accent: #4fa3ff;
+    --success: #37d67a;
+    --warning: #f7b731;
+    --danger: #ff5d73;
+    --brand: #bc13fe;
+    --font-sans: "Space Grotesk", system-ui, sans-serif;
+    --font-mono: "JetBrains Mono", monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    user-select: none;
+}
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--dim); }
+button { font-family: inherit; cursor: pointer; }
+.mono { font-family: var(--font-mono); }
+
+header {
+    display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px;
+    padding: 18px 32px; border-bottom: 1px solid var(--border); background: rgba(20,24,29,0.9);
+    backdrop-filter: blur(6px); flex-shrink: 0;
+}
+.brand-title { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.brand-title h1 { font-size: 22px; letter-spacing: 0.25em; font-weight: 700; text-transform: uppercase; }
+.brand-title h1 span { color: var(--brand); font-weight: 500; }
+.badge-pill { font-size: 10px; padding: 2px 8px; border-radius: 4px; background: rgba(188,19,254,0.1); border: 1px solid rgba(188,19,254,0.3); color: var(--brand); font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; }
+.brand-sub { font-size: 11px; color: var(--dim); letter-spacing: 0.15em; text-transform: uppercase; margin-top: 4px; }
+.header-right { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.info-chip { display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); padding: 6px 12px; border-radius: 4px; font-size: 12px; }
+.info-chip .lbl { color: var(--dim); } .info-chip .val { color: var(--accent); font-weight: 500; }
+.status-badge { display: flex; align-items: center; gap: 8px; border: 1px solid var(--success); padding: 6px 14px; font-size: 12px; color: var(--success); border-radius: 4px; background: rgba(55,214,122,0.05); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
+.status-badge.offline { border-color: var(--danger); color: var(--danger); background: rgba(255,93,115,0.05); }
+.pulse-dot { position: relative; width: 8px; height: 8px; }
+.pulse-dot::before, .pulse-dot::after { content: ''; position: absolute; inset: 0; border-radius: 50%; background: var(--success); }
+.pulse-dot.offline::before, .pulse-dot.offline::after { background: var(--danger); }
+.pulse-dot::before { animation: ping 1.6s cubic-bezier(0,0,0.2,1) infinite; opacity: 0.6; }
+@keyframes ping { 75%, 100% { transform: scale(2.2); opacity: 0; } }
+
+main { flex-grow: 1; min-height: 0; overflow: hidden; padding: 28px 32px; display: flex; flex-direction: column; gap: 24px; max-width: 1700px; width: 100%; margin: 0 auto; }
+.cards-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); border-radius: 6px; overflow: hidden; flex-shrink: 0; }
+@media (max-width: 1100px) { .cards-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { .cards-grid { grid-template-columns: 1fr; } }
+.card { background: var(--panel); padding: 18px 20px; transition: background 0.25s; }
+.card:hover { background: #171c22; }
+.card-hd { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+.card-hd span.tt { color: var(--accent); font-size: 12px; letter-spacing: 0.1em; font-family: var(--font-mono); }
+.card-hd .ic { color: var(--dim); font-size: 13px; }
+.crow { display: flex; justify-content: space-between; align-items: center; margin-bottom: 9px; font-size: 13px; font-family: var(--font-mono); }
+.crow .lbl { color: var(--dim); font-size: 11px; text-transform: uppercase; }
+.crow .val { color: var(--text); font-weight: 500; }
+.crow .val.accent { color: var(--accent); } .crow .val.ok { color: var(--success); font-weight: 600; font-size: 11px; }
+.clickable-card { cursor: pointer; border: none; background: transparent; width: 100%; text-align: left; color: inherit; }
+.clickable-card:hover .hint { color: var(--accent); }
+.hint { margin-top: 10px; font-size: 10px; color: var(--dim); text-align: center; font-family: var(--font-mono); text-transform: uppercase; }
+.bar-track { width: 100%; height: 9px; background: rgba(38,45,53,0.5); border-radius: 5px; overflow: hidden; margin-top: 4px; }
+.bar-fill { height: 100%; background: var(--accent); transition: width 0.6s ease; }
+.bar-fill.brand { background: var(--brand); }
+.env-row { display: flex; justify-content: space-between; align-items: center; width: 100%; background: transparent; border: none; color: inherit; font-family: var(--font-mono); font-size: 12px; padding: 5px 4px; border-radius: 4px; text-transform: uppercase; }
+.env-row .lbl { color: var(--dim); } .env-row .val.on { color: var(--success); font-weight: 600; } .env-row .val.off { color: var(--danger); font-weight: 600; }
+select.deck-select { background: var(--border); color: var(--text); font-size: 11px; padding: 5px 8px; border-radius: 4px; border: 1px solid var(--border); outline: none; font-family: var(--font-mono); }
+select.deck-select:hover { border-color: var(--dim); }
+
+.lower-grid { display: grid; grid-template-columns: 4fr 8fr; gap: 24px; flex-grow: 1; min-height: 0; }
+@media (max-width: 1000px) { .lower-grid { grid-template-columns: 1fr; overflow-y: auto; } }
+.telemetry-box { display: flex; flex-direction: column; background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 18px; font-family: var(--font-mono); min-height: 0; overflow-y: auto; }
+.telemetry-hd { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.telemetry-hd .lbl { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 700; }
+.chart-shell { flex-shrink: 0; display: flex; flex-direction: column; justify-content: space-between; background: rgba(0,0,0,0.45); border: 1px solid rgba(38,45,53,0.6); border-radius: 6px; padding: 12px; }
+.chart-top { display: flex; justify-content: space-between; font-size: 9px; color: var(--dim); }
+.chart-top .live { color: var(--accent); }
+.chart-wrap { height: 110px; margin-top: 8px; }
+.chart-wrap svg { width: 100%; height: 100%; }
+.tele-metrics { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 16px; padding-top: 12px; border-top: 1px solid rgba(38,45,53,0.5); font-size: 12px; flex-shrink: 0; }
+.tele-metrics .lbl { font-size: 9px; color: var(--dim); text-transform: uppercase; display: block; margin-bottom: 3px; }
+.tele-metrics .v { font-weight: 700; } .tele-metrics .v.warn { color: var(--warning); } .tele-metrics .v.hot { color: var(--danger); } .tele-metrics .v.accent { color: var(--accent); }
+.protip { margin-top: 14px; background: rgba(38,45,53,0.2); border: 1px solid rgba(38,45,53,0.5); padding: 10px; border-radius: 5px; font-size: 10.5px; color: var(--dim); line-height: 1.5; flex-shrink: 0; }
+.protip b { color: var(--accent); }
+
+.term-box { display: flex; flex-direction: column; background: rgba(0,0,0,0.9); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; min-height: 0; cursor: text; }
+.term-hd { display: flex; justify-content: space-between; align-items: center; background: var(--panel); border-bottom: 1px solid var(--border); padding: 10px 18px; flex-shrink: 0; }
+.term-hd .lbl { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.1em; font-family: var(--font-mono); }
+.term-quick { display: flex; gap: 8px; font-family: var(--font-mono); font-size: 10px; }
+.term-quick button { background: rgba(11,13,16,0.4); border: 1px solid rgba(38,45,53,0.5); color: var(--dim); padding: 3px 8px; border-radius: 4px; }
+.term-quick button:hover { color: var(--accent); background: rgba(11,13,16,0.8); }
+.term-output { flex-grow: 1; min-height: 0; overflow-y: auto; padding: 16px 22px; font-family: var(--font-mono); font-size: 13.5px; line-height: 1.7; scroll-behavior: smooth; }
+.term-line { white-space: pre-wrap; word-break: break-word; padding: 1px 4px; border-radius: 3px; }
+.term-line:hover { background: rgba(255,255,255,0.04); }
+.t-sys { color: var(--dim); } .t-ok { color: var(--success); } .t-err { color: var(--danger); font-weight: 600; }
+.t-neutral { color: var(--text); } .t-cmd { color: #fff; font-weight: 700; } .t-cmd .prompt { color: var(--accent); margin-right: 8px; }
+.term-input-wrap { display: flex; align-items: center; background: var(--panel); border-top: 1px solid var(--border); padding: 11px 18px; flex-shrink: 0; }
+.term-input-wrap .prompt { color: var(--accent); font-weight: 700; margin-right: 10px; font-family: var(--font-mono); font-size: 15px; }
+#terminal-input { flex-grow: 1; background: transparent; border: none; outline: none; color: var(--text); font-family: var(--font-mono); font-size: 13.5px; caret-color: var(--accent); min-width: 0; }
+#terminal-input::placeholder { color: rgba(141,152,165,0.5); }
+
+footer { padding: 14px; border-top: 1px solid var(--border); background: rgba(20,24,29,0.8); text-align: center; font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; color: var(--dim); text-transform: uppercase; flex-shrink: 0; }
+.footer-link { color: var(--accent); text-decoration: none; margin-left: 10px; cursor: pointer; }
+.footer-link:hover { text-decoration: underline; }
+
+/* ---------- OVERLAYS (RAG SLIDE & LICENSE MODAL) ---------- */
+.overlay { position: fixed; inset: 0; z-index: 50; display: none; justify-content: flex-end; }
+.overlay.open { display: flex; }
+.overlay-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.75); }
+.overlay-panel { position: relative; width: 100%; max-width: 420px; height: 100%; background: var(--panel); border-left: 1px solid var(--border); padding: 24px; display: flex; flex-direction: column; font-family: var(--font-mono); overflow-y: auto; transform: translateX(100%); transition: transform 0.3s ease; }
+.overlay.open .overlay-panel { transform: translateX(0); }
+.overlay-hd { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 16px; margin-bottom: 20px; }
+.overlay-hd h2 { font-size: 16px; font-weight: 700; } .overlay-hd p { font-size: 11px; color: var(--dim); margin-top: 2px; }
+.overlay-close { background: none; border: none; color: var(--dim); padding: 6px; border-radius: 4px; } .overlay-close:hover { color: var(--text); background: rgba(38,45,53,0.4); }
+
+.modal-overlay { position: fixed; inset: 0; z-index: 60; display: none; justify-content: center; align-items: center; padding: 20px; }
+.modal-overlay.open { display: flex; }
+.modal-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(4px); }
+.modal-panel { position: relative; width: 100%; max-width: 600px; height: 80vh; background: var(--panel); border: 1px solid var(--border); padding: 24px; display: flex; flex-direction: column; font-family: var(--font-mono); overflow-y: auto; border-radius: 6px; }
+.modal-hd { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 16px; margin-bottom: 20px; }
+.modal-hd h2 { font-size: 16px; font-weight: 700; } .modal-hd p { font-size: 11px; color: var(--dim); margin-top: 2px; }
+.modal-close { background: none; border: none; color: var(--dim); padding: 6px; border-radius: 4px; } .modal-close:hover { color: var(--text); background: rgba(38,45,53,0.4); }
+.primary-btn { width: 100%; padding: 11px; background: var(--accent); color: var(--bg); border: none; font-weight: 700; font-size: 13px; border-radius: 5px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.primary-btn:hover { opacity: 0.9; }
+.license-text-box { flex-grow: 1; overflow-y: auto; background: rgba(0,0,0,0.4); padding: 16px; border-radius: 6px; border: 1px solid var(--border); font-size: 12px; line-height: 1.6; color: var(--dim); margin-bottom: 18px; white-space: pre-wrap; }
+.license-actions { display: flex; flex-direction: column; gap: 16px; }
+.license-check { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text); cursor: pointer; } .license-check input { cursor: pointer; }
+/* ---- Hardware Devices: árvore ---- */
+.hwdev-device { background: rgba(0,0,0,0.35); border: 1px solid var(--border); border-radius: 6px; margin-bottom: 10px; overflow: hidden; }
+.hwdev-device > summary { list-style: none; cursor: pointer; padding: 11px 14px; display: flex; align-items: center; justify-content: space-between; user-select: none; }
+.hwdev-device > summary::-webkit-details-marker { display: none; }
+.hwdev-device > summary::before { content: "▸"; display: inline-block; margin-right: 8px; color: var(--dim); transition: transform 0.15s ease; font-size: 10px; }
+.hwdev-device[open] > summary::before { transform: rotate(90deg); }
+.hwdev-device-title { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 13px; }
+.hwdev-device-icon { font-size: 15px; }
+.hwdev-body { padding: 4px 14px 12px 30px; border-top: 1px solid var(--border); }
+.hwdev-cat { font-size: 10px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.08em; margin: 10px 0 4px; }
+.hwdev-sensor-row { display: flex; align-items: center; justify-content: space-between; padding: 3px 0; font-size: 12px; }
+.hwdev-sensor-name { color: var(--text); opacity: 0.85; }
+.hwdev-sensor-val { display: flex; align-items: center; gap: 6px; font-weight: 600; font-family: var(--font-mono); }
+.status-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+.status-dot.s-ok { background: var(--success); }
+.status-dot.s-warn { background: var(--warning); }
+.status-dot.s-crit { background: var(--danger); }
+</style>
+</head>
+<body>
+
+<header>
+    <div>
+        <div class="brand-title">
+            <h1>AIVISIONSLAB <span>STUDIO GROUP</span></h1>
+            <span class="badge-pill">Revival v3.0</span>
+        </div>
+        <p class="brand-sub">Phoenix Engine 3.0 // Hardware Revival Platform</p>
+    </div>
+    <div class="header-right">
+        <div class="info-chip mono"><span class="lbl">UPTIME:</span> <span class="val" id="uptime-val">00h 00m 00s</span></div>
+        <div class="info-chip mono"><span class="lbl">TIME:</span> <span class="val" id="clock-val" style="color:var(--text)">--:--:--</span></div>
+        <div class="status-badge" id="conn-status"><span class="pulse-dot" id="conn-dot"></span> <span id="conn-label">Conectando...</span></div>
+        <button id="open-missions-btn" style="background: var(--brand); color: white; border: none; padding: 8px 16px; border-radius: 4px; font-weight: 700; font-size: 12px; cursor: pointer; text-transform: uppercase;">🚀 Missões</button>
+    </div>
+</header>
+
+<main>
+    <section class="cards-grid">
+        <div class="card">
+            <div class="card-hd"><span class="tt">━━ SYSTEM TUNER ━━</span><span class="ic">⚙</span></div>
+            <div class="crow"><span class="lbl">CPU</span><span class="val" id="hw-cpu">--</span></div>
+            <div class="crow"><span class="lbl">RAM</span><span class="val" id="hw-ram">--</span></div>
+            <div class="crow"><span class="lbl">GPU</span><span class="val accent" id="hw-gpu">--</span></div>
+            <div class="crow"><span class="lbl">VRAM</span><span class="val" id="hw-vram">--</span></div>
+            <div class="crow"><span class="lbl">BACKENDS</span><span class="val" id="hw-backend">--</span></div>
+            <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">
+                <div class="crow" style="margin-bottom:4px;"><span class="lbl">MACHINE CLASS</span><span class="val" id="hw-class-lbl" style="color: var(--brand); font-weight: 700;">--</span></div>
+                <div class="crow" style="margin-bottom:4px;"><span class="lbl">GPU SCORE</span><span class="val accent" id="hw-score-lbl">--%</span></div>
+                <div class="bar-track"><div class="bar-fill" id="hw-score-bar" style="width:0%"></div></div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-hd"><span class="tt">━━ ENVIRONMENT ━━</span><span class="ic">▤</span></div>
+            <div id="env-list"></div>
+        </div>
+        <div class="card">
+            <div class="card-hd"><span class="tt">━━ INFERENCE ━━</span><span class="ic">⚡</span></div>
+            <div class="crow"><span class="lbl">OLLAMA MODEL</span>
+                <select class="deck-select" id="inf-model-select"><option value="">Carregando...</option></select>
+            </div>
+            <div style="padding-top:8px;border-top:1px dashed rgba(38,45,53,0.5);margin-top:6px;">
+                <div class="crow"><span class="lbl">VRAM</span><span class="val" id="inf-vram-lbl">-- MB / -- MB</span></div>
+                <div class="bar-track"><div class="bar-fill brand" id="inf-vram-bar" style="width:0%"></div></div>
+                <div class="crow" style="margin-top:8px;"><span class="lbl">GPU TEMP</span><span class="val accent" id="inf-gpu-temp">--°C</span></div>
+                <div class="crow"><span class="lbl">GPU LOAD</span><span class="val accent" id="inf-gpu-load">--%</span></div>
+            </div>
+        </div>
+        <div class="card">
+            <button class="clickable-card" id="open-rag-panel">
+                <div class="card-hd"><span class="tt">━━ PHOENIX STATUS ━━</span><span class="ic">▦</span></div>
+                <div class="crow"><span class="lbl">RAG DOCUMENTS</span><span class="val accent" id="rag-count-lbl">--</span></div>
+                <div class="crow"><span class="lbl">SAFETY RULES</span><span class="val ok">[✓] ACTIVE</span></div>
+                <div class="crow"><span class="lbl">MISSION CONTROL</span><span class="val" style="color:var(--warning);font-weight:600;font-size:11px;">[!] IDLE</span></div>
+                <div class="crow"><span class="lbl">PLANNER ENGINE</span><span class="val ok">[✓] READY</span></div>
+                <div class="hint">CLICK CARD TO VER DETALHES DO RAG</div>
+            </button>
+        </div>
+        <div class="card">
+            <button class="clickable-card" id="open-hw-devices-panel">
+                <div class="card-hd"><span class="tt">━━ HARDWARE DEVICES ━━</span><span class="ic">◫</span></div>
+                <div class="crow"><span class="lbl">DISPOSITIVOS ATIVOS</span><span class="val accent" id="hwdev-count-lbl">--</span></div>
+                <div class="crow"><span class="lbl">SENSORES LIDOS</span><span class="val" id="hwdev-sensor-count-lbl">--</span></div>
+                <div class="crow"><span class="lbl">STATUS</span><span class="val ok" id="hwdev-status-lbl">[✓] OK</span></div>
+                <div class="hint">CLIQUE PARA VER TODOS OS SENSORES</div>
+            </button>
+        </div>
+    </section>
+
+    <section class="lower-grid">
+        <div class="telemetry-box">
+            <div class="telemetry-hd"><span class="lbl">System Telemetry</span></div>
+            <div class="chart-shell">
+                <div class="chart-top"><span>CPU / GPU LOAD (%)</span><span class="live">◆ LIVE</span></div>
+                <div class="chart-wrap">
+                    <svg viewBox="0 0 240 100" preserveAspectRatio="none">
+                        <line x1="0" y1="25" x2="240" y2="25" stroke="#262d35" stroke-width="0.5" stroke-dasharray="3 3"/>
+                        <line x1="0" y1="50" x2="240" y2="50" stroke="#262d35" stroke-width="0.5" stroke-dasharray="3 3"/>
+                        <line x1="0" y1="75" x2="240" y2="75" stroke="#262d35" stroke-width="0.5" stroke-dasharray="3 3"/>
+                        <path id="tele-fill" fill="url(#tgrad)" opacity="0.2"/>
+                        <path id="tele-line" fill="none" stroke="#4fa3ff" stroke-width="1.5"/>
+                        <defs><linearGradient id="tgrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#4fa3ff"/><stop offset="100%" stop-color="transparent"/></linearGradient></defs>
+                    </svg>
+                </div>
+            </div>
+            <div class="tele-metrics">
+                <div><span class="lbl">GPU Core Temp</span><span class="v" id="gpu-temp-lbl">--°C</span></div>
+                <div><span class="lbl">CPU Usage</span><span class="v accent" id="cpu-usage-lbl">--%</span></div>
+            </div>
+        </div>
+        <div class="term-box" id="term-click-area">
+            <div class="term-hd">
+                <span class="lbl">◆ Phoenix Terminal Deck</span>
+                <div class="term-quick">
+                    <button data-cmd="help">[HELP]</button>
+                    <button data-cmd="status">[STATUS]</button>
+                    <button data-cmd="models">[MODELS]</button>
+                </div>
+            </div>
+            <div class="term-output" id="terminal-output"></div>
+            <div class="term-input-wrap">
+                <span class="prompt">phoenix&gt;</span>
+                <input type="text" id="terminal-input" placeholder="Digite um comando ou 'infer <pergunta>'..." autocomplete="off" autofocus>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer>AIVISIONSLAB STUDIO GROUP // PHOENIX ENGINE v3.0 // CONECTADO A api_server.py (localhost:8000)<a class="footer-link" id="footer-license-link">LICENÇA</a><a class="footer-link" id="footer-telemetry-toggle">TELEMETRIA NA NUVEM: --</a></footer>
+
+<!-- RAG SLIDE-OVER -->
+<div class="overlay" id="rag-overlay">
+    <div class="overlay-backdrop" data-close="rag"></div>
+    <div class="overlay-panel">
+        <div class="overlay-hd">
+            <div><h2>RAG REPOSITORY</h2><p>Base de Conhecimento (data/chroma_db)</p></div>
+            <button class="overlay-close" data-close="rag">✕</button>
+        </div>
+        <div class="drop-zone" title="Upload ainda não implementado no backend">
+            <p class="title">Upload ainda não disponível</p>
+            <p class="sub">O backend ainda não tem endpoint de ingestão de documentos (POST /api/rag/upload). Isso fica pendente de implementação — não vou fingir que funciona.</p>
+        </div>
+        <div style="flex-grow:1;overflow-y:auto;margin-bottom:18px;">
+            <div style="font-size:11px;color:var(--accent);font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px;">Documentos Indexados (<span id="doc-count-hd">--</span>)</div>
+            <div class="info-block">
+                <div class="hd">▤ CONTAGEM REAL</div>
+                <div class="desc">O número acima vem do ChromaDB real, a cada poll do <code>/api/state</code>. O backend ainda não expõe um endpoint pra listar os documentos individualmente (nome/tamanho/tipo) — só a contagem.</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- LICENSE MODAL -->
+<div class="modal-overlay" id="license-modal">
+    <div class="modal-backdrop" id="license-backdrop"></div>
+    <div class="modal-panel">
+        <div class="modal-hd">
+            <div><h2>LICENSE AGREEMENT</h2><p>AIVisions Phoenix Engine 3.0</p></div>
+            <button class="modal-close" id="license-close-btn">✕</button>
+        </div>
+        <div class="license-text-box" id="license-text">Carregando licença...</div>
+        <div class="license-actions" id="license-actions">
+            <label class="license-check"><input type="checkbox" id="license-dont-show"> Não mostrar novamente (aceitar licença)</label>
+            <button class="primary-btn" id="license-continue-btn">Continuar</button>
+        </div>
+    </div>
+</div>
+
+<!-- MISSIONS MODAL (APP STORE) -->
+<div class="modal-overlay" id="missions-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:100; justify-content:center; align-items:center;">
+    <div style="background:var(--panel); border:1px solid var(--border); border-radius:8px; width:90%; max-width:900px; height:85vh; padding:24px; display:flex; flex-direction:column; color:var(--text);">
+        <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding-bottom:16px; margin-bottom:20px;">
+            <h2 style="font-size:20px; color:var(--brand);">AIVisions App Store</h2>
+            <button id="close-missions-btn" style="background:none; border:none; color:var(--dim); font-size:20px; cursor:pointer;">✕</button>
+        </div>
+        <div id="missions-grid" style="flex-grow:1; overflow-y:auto; display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; padding-right:8px;">
+            <!-- Os pacotes serão injetados aqui via JS -->
+        </div>
+    </div>
+</div>
+
+<!-- DETALHES DA MISSÃO (Tela de Revisão) -->
+<div class="modal-overlay" id="mission-detail-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.95); z-index:110; justify-content:center; align-items:center;">
+    <div style="background:var(--panel); border:1px solid var(--border); border-radius:8px; width:90%; max-width:500px; padding:24px; color:var(--text);">
+        <h2 id="detail-title" style="color:var(--accent); margin-bottom:10px;"></h2>
+        <p id="detail-desc" style="color:var(--dim); margin-bottom:20px;"></p>
+        
+        <div style="background:rgba(0,0,0,0.3); padding:16px; border-radius:6px; margin-bottom:20px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:12px; color:var(--dim);"><span>Tempo estimado:</span> <span id="detail-time" style="color:var(--text);"></span></div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:12px; color:var(--dim);"><span>Espaço em disco:</span> <span id="detail-space" style="color:var(--text);"></span></div>
+            <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--dim);"><span>Modelos recomendados:</span> <span id="detail-models" style="color:var(--success); font-weight:bold;"></span></div>
+        </div>
+        
+        <button id="install-mission-btn" style="width:100%; padding:12px; background:var(--success); color:var(--bg); border:none; border-radius:6px; font-weight:700; font-size:14px; cursor:pointer;">Instalar Missão</button>
+    </div>
+</div>
+
+<!-- HARDWARE DEVICES MODAL -->
+<div class="modal-overlay" id="hw-devices-overlay">
+    <div class="modal-backdrop" data-close="hw-devices"></div>
+    <div class="modal-panel" style="max-width:820px; height:82vh;">
+        <div class="modal-hd">
+            <div><h2>Hardware Devices</h2><p id="hwdev-modal-sub">Todos os dispositivos e sensores detectados</p></div>
+            <button class="modal-close" data-close="hw-devices">✕</button>
+        </div>
+        <input type="text" id="hwdev-filter" placeholder="Filtrar por nome do dispositivo ou sensor..."
+               style="background:rgba(0,0,0,0.4); border:1px solid var(--border); color:var(--text); padding:9px 12px; border-radius:5px; font-family:var(--font-mono); font-size:12px; margin-bottom:14px; outline:none;">
+        <div id="hwdev-list" style="flex-grow:1; overflow-y:auto; display:flex; flex-direction:column; gap:12px; padding-right:6px;">
+            <p style="color:var(--dim); font-size:12px;">Carregando dispositivos...</p>
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    const $ = (id) => document.getElementById(id);
+    const termOutput = $("terminal-output");
+    const termInput = $("terminal-input");
+
+    let telemetryPoints = Array(24).fill(0);
+    let uptimeSeconds = 0;
+    let backendOnline = false;
+
+    const NEAR_BOTTOM_THRESHOLD_PX = 80;
+    function isNearBottom() { return termOutput.scrollHeight - termOutput.scrollTop - termOutput.clientHeight < NEAR_BOTTOM_THRESHOLD_PX; }
+    function addLog(text, type) {
+        type = type || "neutral";
+        const wasNearBottom = isNearBottom();
+        const line = document.createElement("div");
+        line.className = "term-line t-" + type;
+        if (type === "cmd") { line.innerHTML = '<span class="prompt">phoenix&gt;</span>' + escapeHtml(text); } 
+        else { line.textContent = text; }
+        termOutput.appendChild(line);
+        if (wasNearBottom) { termOutput.scrollTop = termOutput.scrollHeight; }
+    }
+    function escapeHtml(s) { const d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
+
+    addLog("Phoenix BIOS v3.0 Core Bootloader Loaded.", "sys");
+    addLog("Conectando ao backend real em /api/state...", "sys");
+
+    function renderHardware(hw, budget) {
+        $("hw-cpu").textContent = hw.cpu; $("hw-ram").textContent = hw.ram_mb + " MB";
+        $("hw-gpu").textContent = hw.gpu; $("hw-vram").textContent = hw.vram_mb + " MB";
+        $("hw-backend").textContent = (hw.backends || []).join(", ").toUpperCase() || "--";
+        const score = budget ? budget.score : 0;
+        const machineClass = budget ? budget.class : "Unknown";
+        $("hw-score-lbl").textContent = score + "%"; $("hw-score-bar").style.width = score + "%";
+        $("hw-class-lbl").textContent = (machineClass || "Unknown").toUpperCase();
+    }
+    const ENV_LABELS = { docker: "DOCKER", python: "PYTHON", vulkan: "VULKAN SDK", llama_cpp: "LLAMA.CPP", ollama: "OLLAMA API", openai: "OPENAI API", mcp: "MCP" };
+    function renderEnvironment(env) {
+        const list = $("env-list"); list.innerHTML = "";
+        Object.entries(env).forEach(([key, isOnline]) => {
+            const label = ENV_LABELS[key] || key.toUpperCase();
+            const row = document.createElement("div"); row.className = "env-row";
+            row.innerHTML = `<span class="lbl">${label}</span><span class="val ${isOnline ? 'on' : 'off'}">[${isOnline ? '● ONLINE' : '○ OFFLINE'}]</span>`;
+            list.appendChild(row);
+        });
+    }
+    let currentModelsJSON = "";
+    function renderModels(models) {
+        const select = $("inf-model-select"); const asJSON = JSON.stringify(models);
+        if (asJSON === currentModelsJSON) return; currentModelsJSON = asJSON; select.innerHTML = "";
+        if (!models || models.length === 0) { select.innerHTML = '<option value="">Nenhum modelo</option>'; } 
+        else { models.forEach(m => { select.innerHTML += `<option value="${m}">${m}</option>`; }); }
+    }
+    function renderTelemetry(hw, tel) {
+        $("inf-vram-lbl").textContent = `${tel.gpu_vram_used ?? '--'} MB / ${hw.vram_mb} MB`;
+        const pct = tel.gpu_vram_used != null && hw.vram_mb ? Math.min(100, (tel.gpu_vram_used / hw.vram_mb) * 100) : 0;
+        $("inf-vram-bar").style.width = pct + "%";
+        $("inf-gpu-temp").textContent = tel.gpu_temp != null ? tel.gpu_temp + "°C" : "N/A";
+        $("inf-gpu-load").textContent = tel.gpu_load != null ? tel.gpu_load + "%" : "N/A";
+        $("gpu-temp-lbl").textContent = tel.gpu_temp != null ? tel.gpu_temp + "°C" : "N/A";
+        $("cpu-usage-lbl").textContent = tel.cpu_usage != null ? tel.cpu_usage.toFixed(1) + "%" : "N/A";
+        const point = tel.gpu_load != null ? tel.gpu_load : (tel.cpu_usage || 0);
+        telemetryPoints = telemetryPoints.slice(1); telemetryPoints.push(Math.max(0, Math.min(100, point)));
+        const path = "M " + telemetryPoints.map((pt, i) => `${(i * 10.4).toFixed(1)},${(100 - pt).toFixed(1)}`).join(" L ");
+        $("tele-line").setAttribute("d", path);
+        $("tele-fill").setAttribute("d", "M 0,100 L " + telemetryPoints.map((pt, i) => `${(i * 10.4).toFixed(1)},${(100 - pt).toFixed(1)}`).join(" L ") + " L 240,100 Z");
+    }
+    function renderRag(count) { $("rag-count-lbl").textContent = count; $("doc-count-hd").textContent = count; }
+
+    // ================= HARDWARE DEVICES (ALL SENSORS) =================
+    let hwDevicesCache = [];
+    let hwDevicesPollTimer = null;
+    let hwDevicesOpenNames = new Set(); // lembra quais dispositivos o usuário deixou abertos entre re-renders (poll a cada 3s)
+
+    // Ícone por tipo de hardware (o valor de dev.type vem direto do HardwareMonitor/
+    // LibreHardwareMonitorLib, ex: "Cpu", "GpuAmd", "Storage", "Motherboard"...).
+    const HWDEV_ICONS = [
+        [/^cpu/i, "🖥️"],
+        [/^gpu/i, "🎮"],
+        [/storage/i, "💾"],
+        [/motherboard|mainboard|superio/i, "🧩"],
+        [/memory|ram/i, "🗂️"],
+        [/network|nic/i, "🌐"],
+        [/cooler|fan|controller|embeddedcontroller/i, "🌀"],
+        [/battery/i, "🔋"],
+        [/psu|power/i, "🔌"],
+    ];
+    function iconForDevice(type) {
+        const hit = HWDEV_ICONS.find(([re]) => re.test(type || ""));
+        return hit ? hit[1] : "⚙️";
+    }
+
+    // Rótulo de categoria (agrupa sensores dentro de cada dispositivo) por SensorType.
+    const SENSOR_CATEGORY_LABEL = {
+        Temperature: "Temperaturas", Load: "Carga", Clock: "Frequências", Voltage: "Voltagens",
+        Fan: "Fans", Power: "Energia", Data: "Armazenamento", SmallData: "Dados",
+        Control: "Controles", Factor: "Fatores", Flow: "Fluxo", Throughput: "Tráfego",
+    };
+    // Ordem fixa de exibição das categorias (o que sobra cai no fim, ordenado por nome).
+    const SENSOR_CATEGORY_ORDER = ["Temperature", "Load", "Clock", "Voltage", "Fan", "Power", "Data", "SmallData", "Control", "Factor", "Flow", "Throughput"];
+
+    // Verde/amarelo/vermelho — só pra tipos onde um limite genérico faz sentido
+    // (temperatura e carga). Os mesmos números usados nos alertas do backend
+    // (ResidentManager: HOT_TEMP_C=80, HIGH_LOAD_PCT=90), com uma faixa "atenção"
+    // um pouco abaixo disso. Voltagem/clock/etc não têm um limite universal —
+    // ficam sem cor (neutro) em vez de arriscar um limiar errado.
+    function statusForSensor(s) {
+        if (s.type === "Temperature") {
+            if (s.value >= 80) return "s-crit";
+            if (s.value >= 70) return "s-warn";
+            return "s-ok";
+        }
+        if (s.type === "Load") {
+            if (s.value >= 90) return "s-crit";
+            if (s.value >= 70) return "s-warn";
+            return "s-ok";
+        }
+        return null;
+    }
+
+    function formatSensorValue(s) {
+        const decimals = (s.type === "Temperature" || s.type === "Load" || s.type === "Voltage") ? 1 : 0;
+        return s.value.toFixed(decimals) + (s.unit || "");
+    }
+
+    function renderHwDevices(devices) {
+        hwDevicesCache = devices || [];
+        const totalSensors = hwDevicesCache.reduce((n, d) => n + d.sensors.length, 0);
+        $("hwdev-count-lbl").textContent = hwDevicesCache.length;
+        $("hwdev-sensor-count-lbl").textContent = totalSensors;
+        $("hwdev-status-lbl").textContent = hwDevicesCache.length ? "[✓] OK" : "[!] SEM DADOS";
+        $("hwdev-status-lbl").className = "val " + (hwDevicesCache.length ? "ok" : "");
+        if (!hwDevicesCache.length) $("hwdev-status-lbl").style.color = "var(--warning)";
+        renderHwDevicesList($("hwdev-filter").value);
+    }
+
+    function renderHwDevicesList(filterText) {
+        const list = $("hwdev-list");
+        const q = (filterText || "").trim().toLowerCase();
+        list.innerHTML = "";
+
+        if (!hwDevicesCache.length) {
+            list.innerHTML = '<p style="color:var(--dim); font-size:12px;">Nenhum dispositivo com sensores legíveis. Verifique se o processo está rodando como Administrador.</p>';
+            return;
+        }
+
+        let shown = 0;
+        hwDevicesCache.forEach(dev => {
+            const devMatches = dev.name.toLowerCase().includes(q);
+            const sensors = dev.sensors.filter(s => devMatches || s.name.toLowerCase().includes(q));
+            if (q && sensors.length === 0) return;
+            shown++;
+
+            // Agrupa os sensores desse dispositivo por categoria, na ordem fixa definida acima.
+            const byCategory = {};
+            sensors.forEach(s => { (byCategory[s.type] = byCategory[s.type] || []).push(s); });
+            const categories = Object.keys(byCategory).sort((a, b) => {
+                const ia = SENSOR_CATEGORY_ORDER.indexOf(a), ib = SENSOR_CATEGORY_ORDER.indexOf(b);
+                return (ia === -1 ? 999 : ia) - (ib === -1 ? 999 : ib);
+            });
+
+            const bodyHtml = categories.map(cat => {
+                const rows = byCategory[cat].map(s => {
+                    const status = statusForSensor(s);
+                    const dot = status ? `<span class="status-dot ${status}"></span>` : "";
+                    return `<div class="hwdev-sensor-row">
+                        <span class="hwdev-sensor-name">${escapeHtml(s.name)}</span>
+                        <span class="hwdev-sensor-val">${dot}${escapeHtml(formatSensorValue(s))}</span>
+                    </div>`;
+                }).join("");
+                return `<div class="hwdev-cat">${escapeHtml(SENSOR_CATEGORY_LABEL[cat] || cat)}</div>${rows}`;
+            }).join("");
+
+            const details = document.createElement("details");
+            details.className = "hwdev-device";
+            const shouldOpen = (q && shown) || hwDevicesOpenNames.has(dev.name);
+            if (shouldOpen) details.setAttribute("open", "");
+            details.innerHTML = `
+                <summary>
+                    <span class="hwdev-device-title">
+                        <span class="hwdev-device-icon">${iconForDevice(dev.type)}</span>
+                        ${escapeHtml(dev.name)}
+                    </span>
+                    <span class="badge-pill" style="color:var(--dim); border-color:var(--border); background:transparent;">${escapeHtml(dev.type)}</span>
+                </summary>
+                <div class="hwdev-body">${bodyHtml || '<p style="color:var(--dim); font-size:11px;">Sem sensores legíveis.</p>'}</div>
+            `;
+            details.addEventListener("toggle", () => {
+                if (details.open) hwDevicesOpenNames.add(dev.name);
+                else hwDevicesOpenNames.delete(dev.name);
+            });
+            list.appendChild(details);
+        });
+
+        if (q && shown === 0) {
+            list.innerHTML = '<p style="color:var(--dim); font-size:12px;">Nenhum dispositivo ou sensor bate com o filtro.</p>';
+        }
+    }
+
+    async function fetchHwDevices() {
+        try {
+            const res = await fetch("/api/hardware/all");
+            if (!res.ok) throw new Error("HTTP " + res.status);
+            const data = await res.json();
+            renderHwDevices(data.devices || data);
+        } catch (err) {
+            $("hwdev-status-lbl").textContent = "[!] ERRO";
+            $("hwdev-status-lbl").style.color = "var(--danger)";
+        }
+    }
+
+    $("open-hw-devices-panel").addEventListener("click", () => {
+        $("hw-devices-overlay").classList.add("open");
+        fetchHwDevices();
+        if (!hwDevicesPollTimer) hwDevicesPollTimer = setInterval(fetchHwDevices, 3000);
+    });
+    document.querySelectorAll('[data-close="hw-devices"]').forEach(el => {
+        el.addEventListener("click", () => {
+            if (hwDevicesPollTimer) { clearInterval(hwDevicesPollTimer); hwDevicesPollTimer = null; }
+        });
+    });
+    $("hwdev-filter").addEventListener("input", (e) => renderHwDevicesList(e.target.value));
+    // Um fetch inicial "silencioso" pra já ter os contadores no card antes de abrir o modal.
+    fetchHwDevices();
+    // ================= TELEMETRIA NA NUVEM (Firestore, com consentimento) =================
+    async function refreshTelemetryConsentLabel() {
+        const el = $("footer-telemetry-toggle");
+        try {
+            const res = await fetch("/api/telemetry/consent");
+            const data = await res.json();
+            el.textContent = "TELEMETRIA NA NUVEM: " + (data.consent ? "ATIVADA" : "DESATIVADA");
+            el.dataset.consent = data.consent ? "1" : "0";
+        } catch (err) {
+            el.textContent = "TELEMETRIA NA NUVEM: ERRO";
+        }
+    }
+
+    $("footer-telemetry-toggle").addEventListener("click", async () => {
+        const el = $("footer-telemetry-toggle");
+        const currentlyOn = el.dataset.consent === "1";
+        if (!currentlyOn) {
+            const ok = confirm(
+                "Isso vai enviar os dados do seu RAG local (perfil de hardware, benchmarks, regras, " +
+                "eventos de telemetria) pro Firestore da AIVisionsLab periodicamente, pra ajudar a " +
+                "melhorar as próximas versões da Phoenix. Quer ativar?"
+            );
+            if (!ok) return;
+        }
+        try {
+            await fetch(currentlyOn ? "/api/telemetry/consent/decline" : "/api/telemetry/consent/accept", { method: "POST" });
+        } catch (err) { /* estado será refletido no próximo refresh mesmo assim */ }
+        refreshTelemetryConsentLabel();
+    });
+    refreshTelemetryConsentLabel();
+
+    function setConnStatus(online) {
+        backendOnline = online; $("conn-status").classList.toggle("offline", !online);
+        $("conn-dot").classList.toggle("offline", !online); $("conn-label").textContent = online ? "System Online" : "Backend Offline";
+    }
+
+    async function fetchRealState() {
+        try {
+            const res = await fetch("/api/state");
+            if (!res.ok) throw new Error("HTTP " + res.status);
+            const data = await res.json();
+            if (!backendOnline) { setConnStatus(true); addLog("[SYSTEM] Backend conectado.", "ok"); }
+            renderHardware(data.hardware, data.budget || {}); renderEnvironment(data.environment || {});
+            renderModels(data.models || []); renderTelemetry(data.hardware, data.telemetry); renderRag(data.rag_docs ?? 0);
+            uptimeSeconds += 2; $("uptime-val").textContent = formatUptime(uptimeSeconds);
+        } catch (err) {
+            if (backendOnline) { setConnStatus(false); addLog(`[ERROR] Conexão perdida: ${err.message || err}`, "err"); }
+        }
+    }
+    function formatUptime(totalSecs) {
+        const hrs = Math.floor(totalSecs / 3600), mins = Math.floor((totalSecs % 3600) / 60), secs = totalSecs % 60;
+        const pad = (n) => String(n).padStart(2, "0");
+        return `${pad(hrs)}h ${pad(mins)}m ${pad(secs)}s`;
+    }
+    setInterval(() => { $("clock-val").textContent = new Date().toLocaleTimeString("pt-BR"); }, 1000);
+    fetchRealState(); setInterval(fetchRealState, 2000);
+
+    async function sendCommand(cmd) {
+        try {
+            const res = await fetch("/api/command", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ command: cmd }) });
+            const data = await res.json(); return data.output;
+        } catch (err) { return `[ERRO] Falha de comunicação: ${err.message || err}`; }
+    }
+    async function executeFromInput(cmdText) {
+        addLog(cmdText, "cmd");
+        if (cmdText.trim().toLowerCase() === "clear") { termOutput.innerHTML = ""; return; }
+        const out = await sendCommand(cmdText); addLog(out, "neutral");
+    }
+    document.querySelectorAll(".term-quick button").forEach(btn => {
+        btn.addEventListener("click", (e) => { e.stopPropagation(); executeFromInput(btn.getAttribute("data-cmd")); });
+    });
+    $("term-click-area").addEventListener("click", () => termInput.focus());
+    $("open-rag-panel").addEventListener("click", () => $("rag-overlay").classList.add("open"));
+    document.querySelectorAll("[data-close]").forEach(el => {
+        el.addEventListener("click", () => $(el.getAttribute("data-close") + "-overlay").classList.remove("open"));
+    });
+
+    const cmdHistory = []; let historyIdx = -1;
+    termInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+            const cmd = termInput.value.trim(); termInput.value = ""; historyIdx = -1;
+            if (!cmd) return; cmdHistory.push(cmd); if (cmdHistory.length > 100) cmdHistory.shift(); executeFromInput(cmd);
+        } else if (e.key === "ArrowUp") {
+            e.preventDefault(); if (cmdHistory.length === 0) return;
+            historyIdx = historyIdx === -1 ? cmdHistory.length - 1 : Math.max(0, historyIdx - 1);
+            termInput.value = cmdHistory[historyIdx];
+        } else if (e.key === "ArrowDown") {
+            e.preventDefault(); if (historyIdx === -1) return; historyIdx++;
+            if (historyIdx >= cmdHistory.length) { historyIdx = -1; termInput.value = ""; } else termInput.value = cmdHistory[historyIdx];
+        }
+    });
+
+    // ================= LICENSE LOGIC =================
+    const licenseModal = $("license-modal");
+    const licenseTextEl = $("license-text");
+    const licenseActions = $("license-actions");
+    const licenseDontShow = $("license-dont-show");
+    const licenseContinueBtn = $("license-continue-btn");
+    const footerLicenseLink = $("footer-license-link");
+    const licenseCloseBtn = $("license-close-btn");
+    const licenseBackdrop = $("license-backdrop");
+
+    async function checkLicense() {
+        try {
+            const res = await fetch("/api/license");
+            const data = await res.json();
+            licenseTextEl.textContent = data.text;
+            if (!data.accepted) { openLicenseModal(false); }
+        } catch (err) { console.error("License check failed", err); }
+    }
+    function openLicenseModal(isReadOnly) {
+        licenseActions.style.display = isReadOnly ? "none" : "flex";
+        licenseCloseBtn.style.display = isReadOnly ? "block" : "none"; // Show close button only in read-only mode
+        licenseModal.classList.add("open");
+    }
+    function closeLicenseModal() { licenseModal.classList.remove("open"); }
+    
+    licenseContinueBtn.addEventListener("click", async () => {
+        if (licenseDontShow.checked) { await fetch("/api/license/accept", { method: "POST" }); }
+        closeLicenseModal();
+    });
+    footerLicenseLink.addEventListener("click", (e) => { e.preventDefault(); openLicenseModal(true); });
+    licenseCloseBtn.addEventListener("click", closeLicenseModal);
+    licenseBackdrop.addEventListener("click", closeLicenseModal);
+
+    // ================= MISSIONS APP STORE LOGIC =================
+    const missionsModal = document.getElementById("missions-modal");
+    const missionsGrid = document.getElementById("missions-grid");
+    let currentMissionId = null;
+
+    document.getElementById("open-missions-btn").addEventListener("click", async () => {
+        missionsModal.style.display = "flex";
+        missionsGrid.innerHTML = '<p style="color:var(--dim);">Carregando missões...</p>';
+        
+        try {
+            const res = await fetch("/api/missions");
+            const data = await res.json();
+            missionsGrid.innerHTML = "";
+            
+            data.forEach(pkg => {
+                const card = document.createElement("div");
+                card.style.cssText = "background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:16px; cursor:pointer; transition:0.2s;";
+                card.innerHTML = `
+                    <div style="font-size:32px; margin-bottom:10px;">${pkg.icon}</div>
+                    <h3 style="color:var(--text); font-size:16px; margin-bottom:6px;">${pkg.name}</h3>
+                    <p style="color:var(--dim); font-size:11px; height:30px; overflow:hidden;">${pkg.description}</p>
+                    <div style="margin-top:10px; font-size:10px; color:var(--accent);">${pkg.time} | ${pkg.space}</div>
+                `;
+                card.onmouseover = () => card.style.borderColor = "var(--accent)";
+                card.onmouseout = () => card.style.borderColor = "var(--border)";
+                card.addEventListener("click", () => openMissionDetail(pkg.id));
+                missionsGrid.appendChild(card);
+            });
+        } catch (err) {
+            missionsGrid.innerHTML = '<p style="color:var(--danger);">Erro ao carregar missões.</p>';
+        }
+    });
+
+    document.getElementById("close-missions-btn").addEventListener("click", () => missionsModal.style.display = "none");
+
+    async function openMissionDetail(packageId) {
+        currentMissionId = packageId;
+        const detailModal = document.getElementById("mission-detail-modal");
+        detailModal.style.display = "flex";
+        
+        try {
+            const res = await fetch(`/api/missions/${packageId}`);
+            const data = await res.json();
+            
+            document.getElementById("detail-title").innerText = `${data.icon} ${data.name}`;
+            document.getElementById("detail-desc").innerText = data.description;
+            document.getElementById("detail-time").innerText = data.time;
+            document.getElementById("detail-space").innerText = data.space;
+            document.getElementById("detail-models").innerText = (data.resolved_models || []).join(", ");
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    document.getElementById("install-mission-btn").addEventListener("click", async () => {
+        const btn = document.getElementById("install-mission-btn");
+        btn.innerText = "Instalando... (Isso pode levar minutos)";
+        btn.disabled = true;
+        btn.style.background = "var(--dim)";
+        
+        try {
+            const res = await fetch("/api/missions/install", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ package_id: currentMissionId })
+            });
+            const data = await res.json();
+            
+            addLog(`[MISSION] Instalação de ${currentMissionId} concluída.`, "ok");
+            addLog(data.output, "neutral");
+            
+            document.getElementById("mission-detail-modal").style.display = "none";
+            missionsModal.style.display = "none";
+        } catch (err) {
+            addLog(`[ERRO] Falha na instalação: ${err}`, "err");
+        } finally {
+            btn.innerText = "Instalar Missão";
+            btn.disabled = false;
+            btn.style.background = "var(--success)";
+        }
+    });
+
+    checkLicense();
+    addLog("Type 'help' for commands, or 'infer <pergunta>' to query the AI Core.", "neutral");
+    termInput.focus();
+})();
+</script>
+</body>
+</html>

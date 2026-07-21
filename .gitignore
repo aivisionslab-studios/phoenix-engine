@@ -1,0 +1,85 @@
+# ============================================================
+# CREDENCIAIS E SEGREDOS — nunca commitar, nunca subir pra público
+# ============================================================
+data/firebase_service_account.json
+*firebase_service_account*.json
+*service_account*.json
+*.pem
+*.key
+.env
+.env.*
+
+# ============================================================
+# Estado local de consentimento/licença — é uma escolha da MÁQUINA de quem
+# roda, não faz parte do código-fonte do projeto.
+# ============================================================
+data/telemetry_consent.flag
+data/license_accepted.flag
+
+# ============================================================
+# ChromaDB (banco vetorial local do RAG) — binário, gerado localmente a
+# partir de data/knowledge_base.json. Não precisa (e não deve) ir pro repo.
+# ============================================================
+data/chroma_db/
+
+# ============================================================
+# Bancos de dados de instância — telemetria e estado de máquina real,
+# não fixtures do projeto. Regenerados automaticamente em runtime.
+#
+# hardware.db  → contém fingerprint único de hardware (machine DNA) e
+#                milhares de amostras de telemetria (CPU/RAM/uptime) da
+#                máquina real — dado de instância, nunca deve ir público.
+# knowledge.db → banco vazio na primeira execução, recriado pela app.
+# ============================================================
+data/hardware.db
+data/knowledge.db
+
+# ============================================================
+# Cache de runtime / logs — gerado em execução, não é código-fonte.
+# ============================================================
+data/models_cache/
+data/logs/
+*.log
+
+# ============================================================
+# Repos de terceiros — clonados pelo install_phoenix (llama.cpp, Ollama,
+# OpenWebUI, stable-diffusion.cpp, Whisper.cpp, ComfyUI, LibreHardwareMonitor).
+# Não são código nosso, não devem ser versionados nem redistribuídos aqui.
+# O instalador é responsável por buscá-los a partir de um manifest.
+# ============================================================
+repos/
+
+# ============================================================
+# Módulos descontinuados — não deve ir pro release público.
+# ATENÇÃO: antes de confiar neste ignore, confirmar que nada aqui está
+# sendo referenciado ativamente pelo core/ (repetir o audit que já foi
+# feito no AIVisions Engine para o caso do ModelCatalog.ps1 órfão).
+# ============================================================
+_deprecated/
+
+# ============================================================
+# Lixo acidental do Windows Explorer (arquivos "Novo Documento de Texto")
+# ============================================================
+Novo*Documento*de*Texto*.txt
+*/Novo\(a\)*Documento*de*Texto*.txt
+
+# ============================================================
+# Python
+# ============================================================
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.venv/
+venv/
+env/
+build/
+dist/
+
+# ============================================================
+# Editor / SO
+# ============================================================
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

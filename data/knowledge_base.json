@@ -1,0 +1,1424 @@
+[
+  {
+    "id": "bench_qwen35_35b_baseline_win_vulkan",
+    "category": "benchmark",
+    "hardware": {
+      "gpu": "AMD Radeon RX 580 2048SP (8GB VRAM)",
+      "vram_mb": 8192,
+      "backend": "Vulkan (Windows, llama.cpp b9549)",
+      "cpu": "Intel Xeon E5-2690 v3 (12c/24t)",
+      "ram_mb": 32768,
+      "os": "Windows 10 Pro"
+    },
+    "model": {
+      "name": "Qwen3.6-35B-A3B",
+      "type": "LLM (MoE)",
+      "quantization": "Q4_K_M",
+      "size_gb": 22.3
+    },
+    "test": {
+      "result": "7.62 tokens/s (baseline)",
+      "duration_sec": null,
+      "configuration": {
+        "ngl_10": true,
+        "threads_12": true
+      }
+    },
+    "metadata": {
+      "source": "log-sessao-codacus-aivisionslab.md — Fase 1, 07/06/2026",
+      "confidence": "alta, medido diretamente com llama-bench"
+    }
+  },
+  {
+    "id": "bench_qwen35_35b_flag_moe_split",
+    "category": "benchmark",
+    "hardware": {
+      "gpu": "AMD Radeon RX 580 2048SP (8GB VRAM)",
+      "vram_mb": 8192,
+      "backend": "Vulkan (Windows, llama.cpp b9549)",
+      "cpu": "Intel Xeon E5-2690 v3",
+      "ram_mb": 32768,
+      "os": "Windows 10 Pro"
+    },
+    "model": {
+      "name": "Qwen3.6-35B-A3B",
+      "type": "LLM (MoE)",
+      "quantization": "Q4_K_M",
+      "size_gb": 22.3
+    },
+    "test": {
+      "result": "6.92 tokens/s — piorou 9% vs baseline",
+      "duration_sec": null,
+      "configuration": {
+        "override_tensor_exps_cpu": true,
+        "ngl_10": true
+      }
+    },
+    "metadata": {
+      "source": "log-sessao-codacus-aivisionslab.md",
+      "confidence": "alta — flag de MoE split que ajuda na GTX 1060/CUDA piora no Vulkan AMD"
+    }
+  },
+  {
+    "id": "bench_qwen35_35b_flag_no_mmap",
+    "category": "benchmark",
+    "hardware": {
+      "gpu": "AMD Radeon RX 580 2048SP (8GB VRAM)",
+      "vram_mb": 8192,
+      "backend": "Vulkan (Windows, llama.cpp b9549)",
+      "cpu": "Intel Xeon E5-2690 v3",
+      "ram_mb": 32768,
+      "os": "Windows 10 Pro"
+    },
+    "model": {
+      "name": "Qwen3.6-35B-A3B",
+      "type": "LLM (MoE)",
+      "quantization": "Q4_K_M",
+      "size_gb": 22.3
+    },
+    "test": {
+      "result": "7.44 tokens/s — piorou 2% vs baseline",
+      "duration_sec": null,
+      "configuration": {
+        "mmp_0": true,
+        "ngl_10": true
+      }
+    },
+    "metadata": {
+      "source": "log-sessao-codacus-aivisionslab.md",
+      "confidence": "alta — no Windows o flag correto é -mmp 0, não --no-mmap (esse não existe)"
+    }
+  },
+  {
+    "id": "bench_qwen35_35b_flag_kv_cache_q4",
+    "category": "benchmark",
+    "hardware": {
+      "gpu": "AMD Radeon RX 580 2048SP (8GB VRAM)",
+      "vram_mb": 8192,
+      "backend": "Vulkan (Windows, llama.cpp b9549)",
+      "cpu": "Intel Xeon E5-2690 v3",
+      "ram_mb": 32768,
+      "os": "Windows 10 Pro"
+    },
+    "model": {
+      "name": "Qwen3.6-35B-A3B",
+      "type": "LLM (MoE)",
+      "quantization": "Q4_K_M",
+      "size_gb": 22.3
+    },
+    "test": {
+      "result": "7.58 tokens/s — piorou 1% vs baseline",
+      "duration_sec": null,
+      "configuration": {
+        "ctk_q4_0": true,
+        "ctv_q4_0": true,
+        "ngl_10": true
+      }
+    },
+    "metadata": {
+      "source": "log-sessao-codacus-aivisionslab.md",
+      "confidence": "alta — nenhuma das 3 flags do método Codacus (CUDA/GTX1060) ajudou no Vulkan AMD"
+    }
+  },
+  {
+    "id": "bench_mistral7b_wsl2_cpu_pura",
+    "category": "benchmark",
+    "hardware": {
+      "gpu": "nenhuma (fallback CPU)",
+      "vram_mb": 0,
+      "backend": "CPU pura via WSL2 Ubuntu",
+      "cpu": "Intel Xeon E5-2690 v3",
+      "ram_mb": 32768,
+      "os": "WSL2 Ubuntu"
+    },
+    "model": {
+      "name": "Mistral-7B",
+      "type": "LLM",
+      "quantization": "Q4_K_M",
+      "size_gb": 4.3
+    },
+    "test": {
+      "result": "1.79 tokens/s",
+      "duration_sec": null,
+      "configuration": {
+        "threads_24": true
+      }
+    },
+    "metadata": {
+      "source": "log-sessao-codacus-aivisionslab.md",
+      "confidence": "alta"
+    }
+  },
+  {
+    "id": "bench_mistral7b_win_vulkan_rx580",
+    "category": "benchmark",
+    "hardware": {
+      "gpu": "AMD Radeon RX 580 2048SP (8GB VRAM)",
+      "vram_mb": 8192,
+      "backend": "Vulkan (Windows)",
+      "cpu": "Intel Xeon E5-2690 v3",
+      "ram_mb": 32768,
+      "os": "Windows 10 Pro"
+    },
+    "model": {
+      "name": "Mistral-7B",
+      "type": "LLM",
+      "quantization": "Q4_K_M",
+      "size_gb": 4.3
+    },
+    "test": {
+      "result": "18.54 tokens/s — 10x mais rápido que a mesma CPU rodando puro (1.79 t/s)",
+      "duration_sec": null,
+      "configuration": {
+        "threads_12": true
+      }
+    },
+    "metadata": {
+      "source": "log-sessao-codacus-aivisionslab.md",
+      "confidence": "alta — comparação direta no mesmo hardware, só mudando o backend"
+    }
+  },
+  {
+    "id": "bench_referencia_codacus_gtx1060_cuda",
+    "category": "benchmark",
+    "hardware": {
+      "gpu": "NVIDIA GTX 1060 (6GB VRAM) — hardware de referência do vídeo Codacus, não é o nosso",
+      "vram_mb": 6144,
+      "backend": "CUDA (Linux + Docker)",
+      "cpu": "Intel i3-8100 (referência do vídeo)",
+      "ram_mb": null,
+      "os": "Linux"
+    },
+    "model": {
+      "name": "modelo ~35B (vídeo 'Running a 35B AI Model on 6GB VRAM, FAST')",
+      "type": "LLM",
+      "quantization": "N/A",
+      "size_gb": null
+    },
+    "test": {
+      "result": "progressão 3.0 -> 10.0 (MoE split) -> 13.5 (no-mmap) -> 17.0 (mais layers) -> 17.0 (TurboQuant, contexto 256k)",
+      "duration_sec": null,
+      "configuration": {
+        "ngl_20_baseline": true
+      }
+    },
+    "metadata": {
+      "source": "vídeo do canal Codacus, usado como referência/benchmark comparativo no projeto AIVisionsLab",
+      "confidence": "média — dado de terceiros, não medido por nós; usado só pra contraste"
+    }
+  },
+  {
+    "id": "bench_qwen35_35b_q6k_hibrido_offload_automatico",
+    "category": "benchmark",
+    "hardware": {
+      "gpu": "AMD Radeon RX 580 2048SP (8GB VRAM)",
+      "vram_mb": 8192,
+      "backend": "Vulkan (llama.cpp, offload híbrido CPU+GPU automático, sem passar -ngl manual)",
+      "cpu": "Intel Xeon E5-2690 v3",
+      "ram_mb": 32768,
+      "os": "Windows/Linux"
+    },
+    "model": {
+      "name": "Qwen3.5-35B-A3B",
+      "type": "LLM (MoE)",
+      "quantization": "Q6_K",
+      "size_gb": 26
+    },
+    "test": {
+      "result": "llama.cpp fez o fit automático: 41 layers offloaded, model buffer 5154.06 MiB (~5GB) na VRAM, ~7.2/8.0GB VRAM dedicada ocupada no total",
+      "duration_sec": null,
+      "configuration": {
+        "auto_offload": true
+      }
+    },
+    "metadata": {
+      "source": "Claude-Projeto_com_33_seções.md",
+      "confidence": "alta — considerado 'o benchmark mais importante gerado pelo projeto' (modelo de 26GB rodando híbrido numa placa de 2017 com 8GB)"
+    }
+  },
+  {
+    "id": "bench_sd_dreamshaper_rx580_vulkan_512",
+    "category": "benchmark",
+    "hardware": {
+      "gpu": "AMD Radeon RX 580 2048SP (8GB VRAM)",
+      "vram_mb": 8192,
+      "backend": "Vulkan — stable-diffusion.cpp (sd-server)",
+      "cpu": "Intel Xeon E5-2690 v3",
+      "ram_mb": 32768,
+      "os": "Windows"
+    },
+    "model": {
+      "name": "DreamShaper 8 (SD 1.5, convertido para GGUF)",
+      "type": "Stable Diffusion",
+      "quantization": "q8_0",
+      "size_gb": 1.7
+    },
+    "test": {
+      "resolution": "512x512",
+      "steps": 30,
+      "result": "sucesso — 72s por imagem, ~1.65-1.7GB VRAM usada",
+      "duration_sec": 72,
+      "vram_used_mb": 1700,
+      "gpu_temp_celsius": 36
+    },
+    "metadata": {
+      "source": "Claude-Testando_detecção_de_GPU_na_RX_580.md",
+      "confidence": "alta — primeira geração de imagem confirmada via Vulkan numa RX 580, sem CUDA/ROCm/DirectML"
+    }
+  },
+  {
+    "id": "bench_sd_dreamshaper_rx580_resolucao_limite",
+    "category": "benchmark",
+    "hardware": {
+      "gpu": "AMD Radeon RX 580 2048SP (8GB VRAM)",
+      "vram_mb": 8192,
+      "backend": "Vulkan — stable-diffusion.cpp",
+      "cpu": "Intel Xeon E5-2690 v3",
+      "ram_mb": 32768,
+      "os": "Windows"
+    },
+    "model": {
+      "name": "DreamShaper 8 (SD 1.5)",
+      "type": "Stable Diffusion",
+      "quantization": "q8_0",
+      "size_gb": 1.7
+    },
+    "test": {
+      "resolution": "768x768 e 1024x1024",
+      "result": "OOM (falha) em ambas — limite confirmado da RX 580 com esse modelo é 512x512 na GPU",
+      "duration_sec": null
+    },
+    "metadata": {
+      "source": "Claude-Testando_detecção_de_GPU_na_RX_580.md",
+      "confidence": "alta — testado várias vezes, inclusive tentando --vae-tiling"
+    }
+  },
+  {
+    "id": "bench_sd_8k_cpu_xeon_vs_gpu",
+    "category": "benchmark",
+    "hardware": {
+      "gpu": "nenhuma (fallback CPU)",
+      "vram_mb": 0,
+      "backend": "CPU (ComfyUI/Forge)",
+      "cpu": "Intel Xeon E5-2690 v3",
+      "ram_mb": 32768,
+      "os": "Windows"
+    },
+    "model": {
+      "name": "Stable Diffusion (ComfyUI/Forge)",
+      "type": "Stable Diffusion",
+      "quantization": "N/A",
+      "size_gb": null
+    },
+    "test": {
+      "resolution": "8K",
+      "result": "funciona (sem limite de VRAM), mas extremamente lento — chegou a levar mais de 2h para uma imagem em 8K não solicitada de propósito, virou marco folclórico do projeto",
+      "duration_sec": 9360
+    },
+    "metadata": {
+      "source": "Claude-Testando_detecção_de_GPU_na_RX_580.md",
+      "confidence": "média — anedota registrada na jornada, não um teste controlado formal"
+    }
+  },
+  {
+    "id": "bench_comfyui_cpu_vs_sdserver_vulkan_comparativo",
+    "category": "benchmark",
+    "hardware": {
+      "gpu": "AMD Radeon RX 580 2048SP / CPU Xeon E5-2690 v3 (comparação)",
+      "vram_mb": 8192,
+      "backend": "Vulkan vs CPU",
+      "cpu": "Intel Xeon E5-2690 v3",
+      "ram_mb": 32768,
+      "os": "Windows"
+    },
+    "model": {
+      "name": "DreamShaper (SD1.5)",
+      "type": "Stable Diffusion",
+      "quantization": "q8_0/N/A",
+      "size_gb": null
+    },
+    "test": {
+      "resolution": "512x512",
+      "result": "sd-server Vulkan (RX 580): 72s. ComfyUI via CPU: 3-4min. Forge via CPU: 2-3min. Vulkan ganhou em velocidade E qualidade — ComfyUI via CPU no WSL chegou a gerar imagens pretas/quebradas em alguns testes",
+      "duration_sec": 72
+    },
+    "metadata": {
+      "source": "Claude-Testando_detecção_de_GPU_na_RX_580.md",
+      "confidence": "alta"
+    }
+  },
+  {
+    "id": "bench_flux_gguf_recomendacao_rx580",
+    "category": "benchmark",
+    "hardware": {
+      "gpu": "AMD Radeon RX 580 2048SP (8GB VRAM)",
+      "vram_mb": 8192,
+      "backend": "Vulkan — stable-diffusion.cpp (build recente com suporte a Flux GGUF)",
+      "cpu": "Intel Xeon E5-2690 v3",
+      "ram_mb": 32768,
+      "os": "Windows"
+    },
+    "model": {
+      "name": "flux1-schnell-Q4_K_S / flux1-dev-Q4_K_S (GGUF)",
+      "type": "Flux (Stable Diffusion)",
+      "quantization": "Q4_K_S",
+      "size_gb": null
+    },
+    "test": {
+      "result": "flux1-schnell-Q4_K_S: deve rodar (~6GB VRAM), melhor opção. flux1-dev-Q4_K_S: pode ser justo (mais qualidade, mais lento). Flux .safetensors full: muito pesado, não recomendado. Requer --low-vram e build recente do sd-server (versões antigas dão erro 'get sd version from file failed')",
+      "duration_sec": null,
+      "configuration": {
+        "low_vram": true
+      }
+    },
+    "metadata": {
+      "source": "Claude-Configurar_SD_server_com_modelo_Flux_na_RX_580.md",
+      "confidence": "alta"
+    }
+  },
+  {
+    "id": "bench_rx580_vs_rx7800xt_rocm_linux",
+    "category": "benchmark",
+    "hardware": {
+      "gpu": "RX 7800 XT (16GB, Navi/RDNA) — comparação de comunidade, não é o nosso hardware",
+      "vram_mb": 16384,
+      "backend": "ROCm (Fedora Linux + Distrobox)",
+      "cpu": null,
+      "ram_mb": null,
+      "os": "Fedora Linux"
+    },
+    "model": {
+      "name": "não especificado pela comunidade",
+      "type": "LLM",
+      "quantization": "N/A",
+      "size_gb": null
+    },
+    "test": {
+      "result": "RX 7800 XT + ROCm Linux: 103 tokens/s. RX 580 (nosso projeto, 8GB, 2017) + Vulkan Windows: 15-16 tokens/s. Contexto: RX 7800 XT é Navi/RDNA (tem suporte ROCm oficial), RX 580 é Polaris/GCN (não tem) — comparação ilustra a diferença de gerações, não é 'igual vs igual'",
+      "duration_sec": null
+    },
+    "metadata": {
+      "source": "Claude-Testando_detecção_de_GPU_na_RX_580.md",
+      "confidence": "média — número de terceiros usado como contexto comparativo"
+    }
+  },
+  {
+    "id": "bench_debate_comunidade_dual_gpu_rocm_vs_rx580_vulkan",
+    "category": "benchmark",
+    "hardware": {
+      "gpu": "2x GPU (não especificado) + ROCm Linux, vs 1x RX 580 + Vulkan Windows (nosso projeto)",
+      "vram_mb": null,
+      "backend": "ROCm Linux vs Vulkan Windows",
+      "cpu": null,
+      "ram_mb": null,
+      "os": "Linux vs Windows"
+    },
+    "model": {
+      "name": "não especificado",
+      "type": "LLM",
+      "quantization": "N/A",
+      "size_gb": null
+    },
+    "test": {
+      "result": "comunidade: 2 GPUs + Linux + ROCm = 8.3 tokens/s, sem geração de imagem. Nosso projeto: 1 GPU (RX 580) + Windows + Vulkan = 15-16 tokens/s, MAIS geração de imagem via Stable Diffusion, MAIS OpenWebUI completo",
+      "duration_sec": null
+    },
+    "metadata": {
+      "source": "Claude-Testando_detecção_de_GPU_na_RX_580.md",
+      "confidence": "média — comparação usada para argumentar a favor da abordagem Vulkan em discussões de comunidade"
+    }
+  },
+  {
+    "id": "bench_lmstudio_3gpu_vulkan_vs_projeto_1gpu",
+    "category": "benchmark",
+    "hardware": {
+      "gpu": "3x GPU (LM Studio, Vulkan) vs 1x RX 580 (nosso projeto, llama.cpp compilado com Vulkan)",
+      "vram_mb": null,
+      "backend": "Vulkan (ambos)",
+      "cpu": null,
+      "ram_mb": null,
+      "os": "N/A"
+    },
+    "model": {
+      "name": "não especificado",
+      "type": "LLM",
+      "quantization": "N/A",
+      "size_gb": null
+    },
+    "test": {
+      "result": "LM Studio com 3 GPUs via Vulkan: 33 tokens/s (sem imagens, sem OpenWebUI). Nosso projeto com 1 GPU (RX 580) via llama.cpp+stable-diffusion.cpp compilados manualmente com Vulkan: 15-16 tokens/s, MAS com geração de imagens e OpenWebUI. Diferença: eles descobriram Vulkan pela interface do LM Studio; nós fomos direto na fonte, compilando",
+      "duration_sec": null
+    },
+    "metadata": {
+      "source": "Claude-Testando_detecção_de_GPU_na_RX_580.md",
+      "confidence": "média"
+    }
+  },
+  {
+    "id": "bench_modelos_pequenos_recomendados_rx580",
+    "category": "benchmark",
+    "hardware": {
+      "gpu": "AMD Radeon RX 580 2048SP (8GB VRAM)",
+      "vram_mb": 8192,
+      "backend": "Vulkan",
+      "cpu": "Intel Xeon E5-2690 v3",
+      "ram_mb": 32768,
+      "os": "Windows"
+    },
+    "model": {
+      "name": "Qwen3-4B / Llama3.2-3B / Gemma3-4B (Q4_K_M)",
+      "type": "LLM",
+      "quantization": "Q4_K_M",
+      "size_gb": 2.5
+    },
+    "test": {
+      "result": "Qwen3-4B Q4_K_M: ~2.5GB VRAM, ~25 tokens/s. Llama3.2-3B Q4_K_M: ~2GB VRAM, ~30 tokens/s (mais leve). Gemma3-4B Q4_K_M: ~2.5GB VRAM, ~22 tokens/s. Todos deixam VRAM sobrando pra rodar SD junto",
+      "duration_sec": null
+    },
+    "metadata": {
+      "source": "Claude-Testando_detecção_de_GPU_na_RX_580.md — roteiro de tutorial 'LLM na RX 580 via Vulkan'",
+      "confidence": "alta"
+    }
+  },
+  {
+    "id": "bench_a1_supercomputador_comunidade_dual_rtx3090",
+    "category": "benchmark",
+    "hardware": {
+      "gpu": "2x RTX 3090 (24GB cada, 48GB total) — computador de referência de vídeo de comunidade, não é nosso",
+      "vram_mb": 49152,
+      "backend": "CUDA",
+      "cpu": "AMD Ryzen 9 7950X (16c/32t)",
+      "ram_mb": 131072,
+      "os": "Ubuntu Server 24.04"
+    },
+    "model": {
+      "name": "Llama 3.1 8B (Ollama, tag verbose)",
+      "type": "LLM",
+      "quantization": "N/A",
+      "size_gb": null
+    },
+    "test": {
+      "result": "no 'A1' (dual RTX 3090): ~115 tokens/s de geração, ~1200 tokens/s de avaliação de prompt. No MacBook Pro M1 Max (32GB): ~17 tokens/s geração, ~60 tokens/s avaliação — diferença de ~20x e ~10x respectivamente. Transcrição Whisper de podcast de 1h: 70s (A1) vs 110s (Mac)",
+      "duration_sec": null
+    },
+    "metadata": {
+      "source": "IA-Local-e-Home-Assistant-Integração.md (vídeo de terceiros usado como referência/contexto)",
+      "confidence": "média — dado de terceiros, contexto de comparação de classes de hardware"
+    }
+  },
+  {
+    "id": "bench_kokoro_tts_vram",
+    "category": "benchmark",
+    "hardware": {
+      "gpu": "AMD Radeon RX 580 2048SP (8GB VRAM)",
+      "vram_mb": 8192,
+      "backend": "N/A",
+      "cpu": "Intel Xeon E5-2690 v3",
+      "ram_mb": 32768,
+      "os": "Windows/Linux"
+    },
+    "model": {
+      "name": "Kokoro TTS (PT-BR)",
+      "type": "TTS",
+      "quantization": "N/A",
+      "size_gb": null
+    },
+    "test": {
+      "result": "usa menos de 2GB de VRAM (algumas fontes citam ~0.5GB) — deixa ~6GB livres na RX 580 pra rodar Applio/LLM junto na mesma placa",
+      "duration_sec": null
+    },
+    "metadata": {
+      "source": "Claude-Clonagem_de_voz_do_Yuri_no_Applio.md",
+      "confidence": "média"
+    }
+  },
+  {
+    "id": "problem_sd_list_devices_flag_inexistente",
+    "category": "problem",
+    "title": "--list-devices não existe no stable-diffusion.cpp",
+    "hardware": {
+      "gpu": "AMD Radeon RX 580 2048SP",
+      "os": "Windows"
+    },
+    "model": "stable-diffusion.cpp (sd-cli/sd-server)",
+    "error": "[ERROR] common.cpp:290 - error: unknown argument: --list-devices",
+    "cause": "esse flag existe no llama.cpp mas não no stable-diffusion.cpp",
+    "solution": "a detecção de GPU no stable-diffusion.cpp é automática, não listada — rode uma geração simples e observe os logs: aparece 'using Vulkan'/'ggml_vulkan' quando a GPU está ativa, ou 'using CPU'/'n_threads' quando caiu pra CPU",
+    "status": "resolvido"
+  },
+  {
+    "id": "problem_sd_seed_menos_um_erro",
+    "category": "problem",
+    "title": "generate_image retorna erro vazio com seed=-1",
+    "hardware": {
+      "gpu": "AMD Radeon RX 580 2048SP",
+      "os": "Windows"
+    },
+    "model": "stable-diffusion.cpp sd-server + DreamShaper",
+    "error": "{\"error\":\"generate_image returned no results\"}",
+    "cause": "seed=-1 (aleatório) causava falha silenciosa no sd-server; não era OOM (a requisição falhava em 0.3s, tempo rápido demais pra ser estouro de memória)",
+    "solution": "usar seed fixo em vez de -1 — resolveu completamente, gerou em 72s normalmente",
+    "status": "resolvido",
+    "notes": "esse foi um dos erros mais recorrentes e mal-documentados da jornada; entrou como troubleshooting crítico na documentação (seção 09 do site)"
+  },
+  {
+    "id": "problem_sd_oom_resolucao_alta",
+    "category": "problem",
+    "title": "OOM em 768x768 e 1024x1024 no sd-server",
+    "hardware": {
+      "gpu": "AMD Radeon RX 580 2048SP (8GB VRAM)",
+      "os": "Windows"
+    },
+    "model": "stable-diffusion.cpp + DreamShaper 8 (SD 1.5) GGUF q8_0",
+    "error": "generate_image returned no results (erro real desta vez, resolução grande demais)",
+    "cause": "DreamShaper 8 é SD 1.5, resolução nativa 512x512; em 768x768/1024x1024 os buffers intermediários da inferência estouram os 8GB da RX 580, mesmo o modelo em si usando só ~1.65GB",
+    "solution": "tentar --vae-tiling (divide o processamento em partes menores) — mesmo assim, se persistir, o limite real confirmado da RX 580 com esse modelo é 512x512 na GPU; pra resolução maior, usar CPU (Forge/ComfyUI) que não tem limite de VRAM mas é mais lento",
+    "status": "documentado como limite confirmado, não um bug a corrigir"
+  },
+  {
+    "id": "problem_sd_type_q4k_flag_removida",
+    "category": "problem",
+    "title": "--type q4_k não existe na versão atual do sd-server",
+    "hardware": {
+      "gpu": "AMD Radeon RX 580 2048SP",
+      "os": "Windows"
+    },
+    "model": "stable-diffusion.cpp",
+    "error": "flag rejeitada pelo binário",
+    "cause": "a flag foi removida/renomeada em versões mais recentes do stable-diffusion.cpp",
+    "solution": "remover a flag da chamada; usar os modelos .gguf já pré-quantizados em vez de tentar quantizar em tempo real",
+    "status": "resolvido"
+  },
+  {
+    "id": "problem_sd_get_version_from_file_failed",
+    "category": "problem",
+    "title": "'get sd version from file failed' ao tentar carregar Flux GGUF",
+    "hardware": {
+      "gpu": "AMD Radeon RX 580 2048SP",
+      "os": "Windows"
+    },
+    "model": "stable-diffusion.cpp (build antigo) + Flux GGUF",
+    "error": "get sd version from file failed",
+    "cause": "a versão instalada do stable-diffusion.cpp é antiga e não reconhece o formato Flux GGUF",
+    "solution": "baixar o release mais recente com 'vulkan' no nome em github.com/leejet/stable-diffusion.cpp/releases (ex: sd-master-XXXXXXX-bin-win-vulkan-x64.zip), extrair substituindo o binário antigo; se o binário foi compilado manualmente, recompilar do zero com cmake -DGGML_VULKAN=ON",
+    "status": "resolvido"
+  },
+  {
+    "id": "problem_windows_no_mmap_nao_existe",
+    "category": "problem",
+    "title": "--no-mmap não existe no build Windows do llama.cpp",
+    "hardware": {
+      "gpu": "AMD Radeon RX 580 2048SP",
+      "os": "Windows"
+    },
+    "model": "llama.cpp / llama-bench",
+    "error": "flag não reconhecida",
+    "cause": "no Windows o parâmetro equivalente tem nome diferente",
+    "solution": "usar -mmp 0 em vez de --no-mmap",
+    "status": "resolvido"
+  },
+  {
+    "id": "problem_35b_oom_acima_10_layers",
+    "category": "problem",
+    "title": "OOM ao tentar mais de 10 layers no modelo 35B na RX 580",
+    "hardware": {
+      "gpu": "AMD Radeon RX 580 2048SP (8GB VRAM)",
+      "os": "Windows"
+    },
+    "model": "Qwen3.6-35B-A3B Q4_K_M",
+    "error": "Out of Memory com -ngl 15, -ngl 20, -ngl 35",
+    "cause": "8GB de VRAM não comporta mais que ~10 layers desse modelo de 22.3GB no backend Vulkan Windows",
+    "solution": "manter -ngl 10 como teto seguro nesse backend específico; pra offload maior, usar quantização Q6_K com offload híbrido automático (ver bench_qwen35_35b_q6k_hibrido_offload_automatico) que gerencia isso sozinho",
+    "status": "documentado como limite confirmado"
+  },
+  {
+    "id": "problem_wsl2_nao_expoe_rx580_vulkan",
+    "category": "problem",
+    "title": "WSL2 não expõe a RX 580 via Vulkan",
+    "hardware": {
+      "gpu": "AMD Radeon RX 580 2048SP",
+      "os": "WSL2 Ubuntu"
+    },
+    "model": null,
+    "error": "vulkaninfo dentro do WSL2 retorna apenas llvmpipe (renderizador de software/CPU)",
+    "cause": "o WSL2 não faz passthrough de GPU AMD via Vulkan por padrão — só Windows nativo ou Linux dual-boot nativo enxergam a placa de verdade",
+    "solution": "usar Linux em dual boot nativo (não WSL2) quando precisar de Vulkan real da AMD no Linux",
+    "status": "confirmado, sem solução dentro do WSL2"
+  },
+  {
+    "id": "problem_rocm_abandonou_polaris",
+    "category": "problem",
+    "title": "ROCm não suporta a arquitetura Polaris (RX 580, gfx803)",
+    "hardware": {
+      "gpu": "AMD Radeon RX 580 2048SP (Polaris/GCN4, gfx803)",
+      "os": "Windows/Linux"
+    },
+    "model": null,
+    "error": "rocminfo não retorna Agent / instalação de ROCm falha ou não reconhece a placa",
+    "cause": "a AMD encerrou oficialmente o suporte ROCm para a arquitetura Polaris; DirectML também foi abandonado pela Microsoft antes de amadurecer",
+    "solution": "usar Vulkan como caminho alternativo — é um padrão aberto suportado por qualquer GPU com driver desde ~2016, incluindo Polaris. Foi essa a virada de chave de todo o projeto (llama.cpp e depois stable-diffusion.cpp compilados com -DGGML_VULKAN=ON)",
+    "status": "sem solução via ROCm; contornado via Vulkan",
+    "notes": "citação real que circula sobre AMD: 'AMD GPUs are supported on Windows and Linux with ROCm' — isso é falso especificamente pra RX 580/Polaris, e o projeto provou isso na prática"
+  },
+  {
+    "id": "problem_applio_requirements_forca_cuda",
+    "category": "problem",
+    "title": "requirements.txt do Applio força instalação de PyTorch com CUDA mesmo no Windows AMD",
+    "hardware": {
+      "gpu": "AMD Radeon RX 580",
+      "os": "Windows"
+    },
+    "model": "Applio (voice cloning / RVC)",
+    "error": "pip install -r requirements.txt trava tentando instalar torch==2.7.1+cu128",
+    "cause": "o requirements.txt do Applio detecta win32 e sempre tenta puxar a build CUDA do torch, mesmo sem placa Nvidia",
+    "solution": "instalar manualmente o PyTorch CPU-only primeiro (sem --index-url de CUDA/ROCm), depois editar o requirements.txt removendo as 3 linhas que especificam a versão CUDA do torch/torchaudio antes de rodar o pip install; ou usar torch-directml pra ativar a RX 580 via DirectML (device 'privateuseone:0')",
+    "status": "resolvido"
+  },
+  {
+    "id": "problem_applio_rocm_nao_suporta_polaris_no_treino",
+    "category": "problem",
+    "title": "Applio: treinamento de voz exige Nvidia RTX 20-series+; RX 580 só serve para inferência",
+    "hardware": {
+      "gpu": "AMD Radeon RX 580",
+      "os": "Windows/Linux"
+    },
+    "model": "Applio (RVC)",
+    "error": null,
+    "cause": "para inferência/TTS o Applio roda em qualquer CPU; para treinamento (fine-tuning de voz), oficialmente só suporta Nvidia RTX série 20+ com 8GB VRAM",
+    "solution": "treinamento roda em CPU no Xeon (mais lento, mas funciona — confirmado no treino da voz do Yuri); inferência pode usar DirectML na RX 580 via torch-directml",
+    "status": "confirmado como limitação de projeto upstream do Applio, não bug nosso"
+  },
+  {
+    "id": "problem_kokoro_avx512_xeon_incompativel",
+    "category": "problem",
+    "title": "Kokoro TTS falha ao instalar no Xeon E5-2690 v3 por causa do blis/AVX512",
+    "hardware": {
+      "gpu": null,
+      "os": "Linux"
+    },
+    "model": "Kokoro TTS (via spacy -> blis)",
+    "error": "falha de build do pacote blis",
+    "cause": "spacy depende de blis, que tenta compilar usando instruções AVX512, que o Xeon E5-2690 v3 (Haswell-EP) não suporta",
+    "solution": "não resolvido diretamente nessa sessão — classificado como 'erro clássico de hardware vs dependência'; caminho seria forçar build sem AVX512 ou trocar de TTS",
+    "status": "aberto"
+  },
+  {
+    "id": "problem_flux2_vkdevicelost_1024",
+    "category": "problem",
+    "title": "vk::DeviceLostError (TDR timeout) rodando FLUX.2 klein/dev em 1024x1024 no Linux",
+    "hardware": {
+      "gpu": "AMD Radeon RX 580",
+      "os": "Ubuntu (Mesa RADV)"
+    },
+    "model": "FLUX.2 klein / FLUX.2 dev (GGUF)",
+    "error": "vk::DeviceLostError",
+    "cause": "timeout de watchdog do driver amdgpu (TDR) — a geração em 1024x1024 demora mais do que o timeout padrão do kernel permite antes de assumir que a GPU travou",
+    "solution": "adicionar amdgpu.lockup_timeout=10000 no GRUB_CMDLINE_LINUX_DEFAULT (/etc/default/grub), rodar update-grub e reiniciar. Comando seguro pra editar: sudo sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT=\"\"/GRUB_CMDLINE_LINUX_DEFAULT=\"amdgpu.lockup_timeout=10000\"/' /etc/default/grub (evita erro de digitação ao colar dentro do nano)",
+    "status": "resolvido"
+  },
+  {
+    "id": "problem_sd35_large_trava_pc_windows",
+    "category": "problem",
+    "title": "SD 3.5 Large travou o PC inteiro no Windows usando toda a RAM",
+    "hardware": {
+      "gpu": "AMD Radeon RX 580",
+      "os": "Windows"
+    },
+    "model": "Stable Diffusion 3.5 Large (16.5GB) + encoders (~10GB)",
+    "error": "sistema travou completamente, precisou reset físico",
+    "cause": "modelo + encoders somam ~26.5GB, muito acima da RAM/VRAM disponível sem gerenciamento de memória",
+    "solution": "no Linux: instalar e ativar earlyoom (sudo apt install earlyoom -y && sudo systemctl enable --now earlyoom) — mata o processo que mais consome memória antes do sistema travar de vez; configurar swap de pelo menos 16-32GB antes de tentar rodar esse modelo com offload",
+    "status": "mitigado (não testado se resolve 100%, mas earlyoom evita o travamento total)"
+  },
+  {
+    "id": "problem_applio_ctrlc_nao_para_treino",
+    "category": "problem",
+    "title": "Ctrl+Z / Ctrl+C não interrompem o treinamento do Applio no terminal",
+    "hardware": {
+      "gpu": "AMD Radeon RX 580",
+      "os": "Windows"
+    },
+    "model": "Applio (treinamento RVC)",
+    "error": "comandos de interrupção padrão não respondiam",
+    "cause": "o processo de treino não trata SIGINT/SIGTSTP normalmente durante o loop de treino",
+    "solution": "aguardar/forçar interrupção pelo próprio fluxo do Applio (log final confirmado: 'Keyboard interruption in main thread... closing server' quando funcionou)",
+    "status": "contornado"
+  },
+  {
+    "id": "problem_gemini_conversa_especifica_travada",
+    "category": "problem",
+    "title": "Uma conversa específica do Gemini ('Ajuda Com Projetos e Organização') passou a dar erro em qualquer mensagem nova",
+    "hardware": {
+      "gpu": null,
+      "os": null
+    },
+    "model": "Gemini (Flash-Lite)",
+    "error": "erro persistente ao enviar qualquer mensagem só nessa conversa; outras conversas continuavam funcionando normalmente",
+    "cause": "provável excesso de contexto acumulado (histórico ultrapassou o limite de tokens), cache/sessão corrompida no navegador, ou conteúdo problemático salvo no histórico que dispara erro ao tentar continuar a partir dali",
+    "solution": "tentar: (1) recarregar a página / trocar de navegador, (2) trocar o modelo selecionado (ex: Flash-Lite -> Gemini 1.5 Pro/Flash, força reinterpretação do histórico), (3) abrir a mesma conversa em outro dispositivo pra isolar se é conta/servidor ou navegador local, (4) se nada resolver, copiar o texto final antes do erro e começar uma conversa nova com esse resumo como contexto — histórico corrompido no servidor geralmente não tem solução definitiva além de abandonar o tópico",
+    "status": "contornado (não há fix garantido do lado do usuário)"
+  },
+  {
+    "id": "problem_forum_ban_por_spam_ao_postar_solucao",
+    "category": "problem",
+    "title": "Conta banida de fórum por spam ao postar a solução da RX 580 com links",
+    "hardware": {
+      "gpu": "AMD Radeon RX 580",
+      "os": null
+    },
+    "model": null,
+    "error": "'Please contact the administrator if this was done in error' — banimento automático",
+    "cause": "postagem imediata com múltiplos links dispara filtro anti-spam de fóruns grandes, mesmo sendo conteúdo técnico legítimo",
+    "solution": "reiniciar modem/trocar IP ou usar VPN pra IP limpo numa conta nova; construir reputação antes de postar links (responder sem link primeiro, postar link só depois de ter histórico); alternativas de maior controle: Reddit (nicho certo, focar no 'como' com benchmarks), Hugging Face Spaces (demonstração interativa prova a solução funciona), GitHub com README bem documentado como porta de entrada",
+    "status": "mitigado para o futuro"
+  },
+  {
+    "id": "problem_openwebui_toolserver_openapi_bug",
+    "category": "problem",
+    "title": "Bug conhecido do OpenAPI Tool Server do Open WebUI — schema não chega no modelo de forma confiável",
+    "hardware": {
+      "gpu": null,
+      "os": null
+    },
+    "model": "Open WebUI (Configurações → Integrações → Gerenciar servidores de ferramentas)",
+    "error": "schema da tool não chega de forma confiável ao modelo (issues open-webui/open-webui #21805 e #25737)",
+    "cause": "bug documentado do próprio Open WebUI na conexão via OpenAPI Tool Server",
+    "solution": "contornado usando tool-calling nativo dentro de /v1/chat/completions do próprio Fennec Gateway (FastAPI compatível com OpenAI) em vez de depender da tela de Tool Server do Open WebUI",
+    "status": "contornado (bug é upstream, não corrigido por nós)"
+  },
+  {
+    "id": "problem_workspace_tool_nao_roda_standalone",
+    "category": "problem",
+    "title": "Script de Workspace Tool do Open WebUI não roda com 'py arquivo.py' direto",
+    "hardware": {
+      "gpu": null,
+      "os": "Windows (Phoenix nativa) + Docker (Open WebUI)"
+    },
+    "model": "Open WebUI Workspace Tools",
+    "error": "nenhum erro, nenhuma saída — o script termina silenciosamente",
+    "cause": "o arquivo é uma definição de classe (class Tools) pensada pra ser colada na UI de Workspace > Tools do Open WebUI (ou registrada via API /api/v1/tools/create), não um script standalone; rodar com 'py' só importa a classe e não chama nada",
+    "solution": "colar o conteúdo na UI de Workspace > Tools, ou registrar programaticamente via API /api/tools/create",
+    "status": "esclarecido (não era bug, era uso incorreto)"
+  },
+  {
+    "id": "problem_phoenix_core_invisivel_dentro_docker",
+    "category": "problem",
+    "title": "Tools da Phoenix falham ao importar Core/Filesystem de dentro do container do Open WebUI",
+    "hardware": {
+      "gpu": null,
+      "os": "Windows (Phoenix nativa) + Docker (Open WebUI)"
+    },
+    "model": "Phoenix (FENNEC_CORE_AVAILABLE = False)",
+    "error": "ImportError em Filesystem.filesystem_connector ao tentar chamar a função de verdade",
+    "cause": "a Phoenix roda nativa no Windows, o Open WebUI roda dentro de um container Docker — o container não enxerga os módulos Core/ e Filesystem/ da Phoenix por padrão",
+    "solution": "montar volume compartilhado entre o host e o container, ou empacotar Core/Filesystem como pacote pip instalável dentro do container",
+    "status": "identificado, solução (volume montado vs pacote pip) documentada mas pendente de decisão/implementação"
+  },
+  {
+    "id": "problem_claude_esqueceu_present_files",
+    "category": "problem",
+    "title": "Claude criou e testou um script mas esqueceu de entregar o link de download",
+    "hardware": {
+      "gpu": null,
+      "os": null
+    },
+    "model": "wire_governance_into_flow.py",
+    "error": "'arquivo não encontrado' ao tentar rodar py wire_governance_into_flow.py",
+    "cause": "o arquivo foi criado e testado só no output interno da sessão anterior de Claude, mas a chamada de present_files (que gera o link de download real) nunca foi feita — o arquivo nunca existiu na máquina do usuário",
+    "solution": "sempre chamar present_files depois de criar/testar um arquivo que o usuário precisa baixar, antes de considerar a tarefa concluída",
+    "status": "identificado — lição pra não repetir",
+    "notes": "aconteceu junto com uma mensagem separada e não relacionada de limite de plano gratuito do claude.ai batendo (\"sem mensagens gratuitas até 16:40\"), que o usuário confundiu inicialmente com erro de código"
+  },
+  {
+    "id": "problem_knowledge_engine_confianca_travada",
+    "category": "problem",
+    "title": "KnowledgeEngine retornava confiança travada em ~0.69-0.70 independente da pergunta",
+    "hardware": {
+      "gpu": null,
+      "os": null
+    },
+    "model": "KnowledgeEngine.query_knowledge() (versão antiga, pré-ChromaDB)",
+    "error": "confiança suspeita e quase constante em perguntas completamente diferentes (identidade, Vulkan vs CUDA, arquitetura de software sem relação com o RAG)",
+    "cause": "o texto gerado para embedding fazia str(dict) direto dos campos aninhados (ex: \"hardware: {'gpu': 'AMD Radeon RX 580', ...}\"), virando sintaxe Python e não linguagem natural — o modelo de embedding (nomic-embed-text) via quase o mesmo 'ruído de formatação' em todo documento, dominando o sinal semântico real",
+    "solution": "reescrever a geração de texto por categoria como builders dedicados que montam frases naturais em português (_benchmark_text, _problem_text, _rule_text, _configuration_text, _telemetry_event_text), com fallback genérico que ao menos vira 'chave.subchave: valor' em vez de repr de dict cru — é exatamente a versão atual do knowledge_engine.py",
+    "status": "resolvido (é a própria versão atual do motor)"
+  },
+  {
+    "id": "problem_phoenix_alucinava_perguntas_identidade",
+    "category": "problem",
+    "title": "Phoenix alucinava em perguntas de identidade",
+    "hardware": {
+      "gpu": null,
+      "os": null
+    },
+    "model": "Phoenix (via Ollama/llama3:latest)",
+    "error": "inventava afiliações; confundia 'Machine DNA' (hash real de hardware) com metáfora poética de personalidade de IA; às vezes respondia em inglês a perguntas em português",
+    "cause": "dependia do LLM 'pensar' sozinho quem ele é a cada vez, sem fonte única de verdade — havia até duplicação entre um SYSTEM_PROMPT hardcoded (mencionava 'AWS', nunca confirmado) e o kb_000_identity do RAG, com nomes de estúdio divergentes entre versões",
+    "solution": "bypass determinístico (Golden Answer): o RuleEvaluator detecta a intenção via regex (_is_identity_query, _is_vulkan_vs_cuda_query, _is_machine_dna_query) e busca a resposta pronta no RAG (golden_answer_*), retornando sem chamar o LLM. Fonte única de verdade consolidada em kb_000_identity com 3 níveis de profundidade e regra explícita de responder sempre no idioma da pergunta",
+    "status": "código pronto e presente na base, aplicação em produção a confirmar"
+  },
+  {
+    "id": "problem_site_traducao_bugs",
+    "category": "problem",
+    "title": "Bugs de tradução no site setup-ia-local-rx580-vulkan.web.app",
+    "hardware": {
+      "gpu": null,
+      "os": null
+    },
+    "model": "site AIVisionsLab (Firebase Hosting, en-US.ts / pt-BR.ts)",
+    "error": "seletor de idioma não funcionava; idiomas como it-IT/es-ES/fr-FR/de-DE tinham só nav/sidebar/header traduzidos, sections e footer ficavam em inglês; faltava imgRows no objeto benchmarks causando erro em runtime ao mapear arrays nulos; meta.subtitle, meta.techTitle e footer.links ausentes no pt-BR",
+    "cause": "traduções parciais feitas incrementalmente sem garantir todos os campos obrigatórios em cada idioma",
+    "solution": "3 bugs corrigidos: seletor de idioma consertado, traduções completadas incluindo imgRows em benchmarks, campos meta/footer completados no pt-BR",
+    "status": "resolvido — site em produção com PT-BR funcionando"
+  },
+  {
+    "id": "problem_docker_desktop_nao_inicia",
+    "category": "problem",
+    "title": "Docker Desktop recorrentemente falha ao iniciar no Windows",
+    "hardware": {
+      "gpu": null,
+      "os": "Windows"
+    },
+    "model": "Docker Desktop",
+    "error": "Error response from daemon: Docker Desktop is unable to start",
+    "cause": "instabilidade recorrente do Docker Desktop no Windows (WSL2 backend), apareceu repetidas vezes ao longo do projeto",
+    "solution": "não há causa única documentada — geralmente resolvido reiniciando o serviço/WSL2 ou o próprio Docker Desktop; recorrente o suficiente pra valer alertar no fluxo de instalação",
+    "status": "recorrente, sem fix definitivo documentado"
+  },
+  {
+    "id": "problem_ipex_pytorch_version_mismatch",
+    "category": "problem",
+    "title": "IPEX incompatível com a versão de PyTorch instalada no ComfyUI",
+    "hardware": {
+      "gpu": "AMD Radeon RX 580",
+      "os": "WSL2/Linux"
+    },
+    "model": "ComfyUI + Intel Extension for PyTorch (IPEX)",
+    "error": "ERROR! Intel® Extension for PyTorch* needs to work with PyTorch 2.8.*, but PyTorch 2.4.1+cu121 is found",
+    "cause": "versão de PyTorch instalada (2.4.1+cu121) não bate com a exigida pelo IPEX (2.8.*)",
+    "solution": "documentado como incompatibilidade — não há flag pra 'ativar' IPEX manualmente, ele é detectado automaticamente quando as versões batem; a via CUDA/IPEX ficou descartada nesse ambiente (RX 580 não tem CUDA de qualquer forma)",
+    "status": "documentado, não resolvido (fora do caminho recomendado de qualquer forma)"
+  },
+  {
+    "id": "rule_positioning_nunca_melhor_que_absoluto",
+    "category": "rule",
+    "rule": "Nunca afirmar que a Phoenix é 'melhor que' LM Studio, Ollama ou LocalAI em termos absolutos",
+    "context": "guardrail de posicionamento (positioning_001) definido pra evitar comparações de marketing exageradas ou enganosas",
+    "applies_to": "respostas de identidade, comparação de produtos, marketing"
+  },
+  {
+    "id": "rule_responder_no_idioma_da_pergunta",
+    "category": "rule",
+    "rule": "Responder sempre no idioma em que a pergunta foi feita",
+    "context": "bug observado: a Phoenix respondeu em inglês a uma pergunta feita em português",
+    "applies_to": "todas as respostas geradas pela Phoenix"
+  },
+  {
+    "id": "rule_bypass_deterministico_perguntas_identidade",
+    "category": "rule",
+    "rule": "Perguntas de identidade, Vulkan-vs-CUDA e Machine DNA devem usar resposta determinística (golden_answer) do RAG, sem chamar o LLM generativo",
+    "context": "resolve variância e alucinação de marca de forma permanente, ao custo de não ser 'inteligente'/generativo especificamente nessas perguntas — é proposital",
+    "applies_to": "RuleEvaluator / ExecutionPlan(runtime='static', strategy='identity_static_response')"
+  },
+  {
+    "id": "rule_swap_nao_e_extensao_de_ram",
+    "category": "rule",
+    "rule": "Memória virtual (swap/pagefile) é 'reserva de emergência', não extensão real de RAM ou de performance",
+    "context": "swap grande evita crash mas deixa tudo muito mais lento (engasgo, stutter) quando ativado; não deve ser tratado como se fosse RAM de verdade",
+    "applies_to": "recomendações de configuração de sistema, dimensionamento de hardware para IA local"
+  },
+  {
+    "id": "rule_ordem_gargalo_ia_local",
+    "category": "rule",
+    "rule": "Ordem de impacto no gargalo de IA local: GPU (VRAM) > RAM > Disco (SSD) > CPU",
+    "context": "conclusão recorrente em diagnósticos de hardware do projeto — CPU forte (como o Xeon) quase nunca é o fator limitante real pra rodar LLMs",
+    "applies_to": "recomendações de upgrade de hardware e diagnóstico de lentidão"
+  },
+  {
+    "id": "rule_vulkan_agnostico_de_hardware",
+    "category": "rule",
+    "rule": "Vulkan funciona em qualquer GPU com driver desde ~2016, independente do fabricante — é o caminho recomendado quando CUDA/ROCm não estão disponíveis ou não suportam o hardware",
+    "context": "descoberta central do projeto: ggml+Vulkan é agnóstico de hardware, ao contrário de CUDA (só Nvidia) e ROCm (só placas AMD recentes/suportadas oficialmente)",
+    "applies_to": "recomendações de backend para inferência local em hardware legado ou não-Nvidia"
+  },
+  {
+    "id": "rule_rx580_sem_rocm",
+    "category": "rule",
+    "rule": "RX 580 (Polaris, gfx803) não tem suporte oficial a ROCm — qualquer solução que dependa de ROCm não vai funcionar nela",
+    "context": "AMD encerrou suporte ROCm pra arquitetura Polaris; confirmado na prática (rocminfo não retorna Agent)",
+    "applies_to": "qualquer recomendação de stack de IA para RX 580 ou GPUs Polaris"
+  },
+  {
+    "id": "rule_ambiente_limpo_de_inferencia",
+    "category": "rule",
+    "rule": "Ao rodar inferência de IA local pesada, evitar Chrome com muitas abas, YouTube, múltiplos containers Docker e processos paralelos rodando junto",
+    "context": "recomendação prática pra sistemas com RAM/VRAM limitada (ex: Xeon + 32GB), onde esses processos competem por memória com o modelo",
+    "applies_to": "recomendações de uso durante inferência local em hardware limitado"
+  },
+  {
+    "id": "rule_editar_configs_sistema_via_sed",
+    "category": "rule",
+    "rule": "Preferir comando sed direto em vez de editar arquivos de configuração de sistema (ex: /etc/default/grub) dentro de editores interativos como nano ao colar texto",
+    "context": "colar texto multi-linha dentro do nano pode ser interpretado parcialmente como senha/comando durante prompts de sudo, causando edições incompletas ou erradas",
+    "applies_to": "automação/instruções de edição de arquivos de configuração no Linux"
+  },
+  {
+    "id": "rule_workspace_tools_seguranca",
+    "category": "rule",
+    "rule": "Workspace Tools e Functions do Open WebUI rodam Python arbitrário no servidor — dar acesso ao Workspace é equivalente a dar shell access na máquina",
+    "context": "aviso de segurança da própria documentação do Open WebUI",
+    "applies_to": "decisões de quem recebe acesso administrativo ao Open WebUI"
+  },
+  {
+    "id": "rule_native_mode_tool_calling_padrao",
+    "category": "rule",
+    "rule": "Desde a v0.10.0 do Open WebUI, Native Mode é o padrão de tool-calling; o modo antigo (Legacy, por prompt-injection) está oficialmente sem suporte, sem bugfix e sem acesso às tools nativas (Memory, Notes, Knowledge, Channels, Agentic Research)",
+    "context": "modelos locais pequenos (<30B) rodando via Ollama/CPU tendem a produzir JSON malformado em Native Mode; a recomendação é usar um modelo mais forte pra tool-calling em vez de cair pro Legacy",
+    "applies_to": "configuração de modelos e tool-calling no Open WebUI"
+  },
+  {
+    "id": "rule_present_files_apos_criar_arquivo",
+    "category": "rule",
+    "rule": "Sempre chamar present_files depois de criar/testar um arquivo que o usuário vai baixar, antes de considerar a entrega concluída",
+    "context": "incidente registrado onde um script foi criado e testado mas nunca chegou a existir na máquina do usuário por falta dessa chamada",
+    "applies_to": "fluxo de entrega de arquivos gerados por IA"
+  },
+  {
+    "id": "config_llama_server_rx580_vulkan_recomendada",
+    "category": "configuration",
+    "name": "llama-server na RX 580 via Vulkan (offload automático)",
+    "recommendation_tier": "recomendado",
+    "flags": {
+      "device": "Vulkan0",
+      "ngl": 99,
+      "port": 8081,
+      "host": "0.0.0.0"
+    },
+    "result": "llama.cpp gerencia o offload de layers automaticamente entre GPU/CPU, evitando ter que calcular manualmente o -ngl ideal",
+    "duration_sec": null,
+    "vram_used_mb": null,
+    "ram_used_mb": null,
+    "validated_on": "RX 580 2048SP, Windows e Linux"
+  },
+  {
+    "id": "config_rx580_teto_10_layers_35b",
+    "category": "configuration",
+    "name": "Teto seguro de layers pra modelo 35B na RX 580 (8GB) via Vulkan Windows",
+    "recommendation_tier": "limite confirmado",
+    "flags": {
+      "ngl": 10,
+      "t": 12
+    },
+    "result": "7.62 tokens/s, sem OOM. Acima de 10 layers (15/20/35) deu OOM",
+    "duration_sec": null,
+    "vram_used_mb": 8192,
+    "ram_used_mb": null,
+    "validated_on": "Qwen3.6-35B-A3B Q4_K_M, Windows Vulkan"
+  },
+  {
+    "id": "config_xeon_32gb_recomendacoes",
+    "category": "configuration",
+    "name": "Configuração recomendada pra Xeon E5-2690 v3 + 32GB RAM rodando IA local",
+    "recommendation_tier": "recomendado (sem upgrade de hardware)",
+    "flags": {
+      "swap_gb": "8-16 (não 34)",
+      "modelo_recomendado": "7B ou 13B Q4_K_M",
+      "evitar_durante_inferencia": "Chrome com muitas abas, YouTube, múltiplos containers Docker"
+    },
+    "result": "resolve ~80% da dor de lentidão imediatamente, sem precisar trocar hardware",
+    "duration_sec": null,
+    "vram_used_mb": null,
+    "ram_used_mb": null,
+    "validated_on": "Xeon E5-2690 v3, 32GB RAM DDR4 ECC"
+  },
+  {
+    "id": "config_xeon_caminhos_evolucao",
+    "category": "configuration",
+    "name": "Caminhos de evolução de hardware pra Xeon E5-2690 v3 rodando IA local maior",
+    "recommendation_tier": "3 níveis (leve/médio/profissional)",
+    "flags": {
+      "caminho_leve": "modelos 7B/13B quantizados, sem upgrade",
+      "caminho_medio": "subir para 64GB RAM física (estabilidade para modelos ~20B)",
+      "caminho_profissional": "GPU dedicada 12-24GB VRAM (RTX 3060 12GB mínimo bom, RTX 3090 24GB custo-benefício ideal, RTX 4090 topo)"
+    },
+    "result": "ordem de impacto: reduzir modelo > subir RAM > GPU dedicada",
+    "duration_sec": null,
+    "vram_used_mb": null,
+    "ram_used_mb": null,
+    "validated_on": "diagnóstico Xeon E5-2690 v3 + 32GB RAM"
+  },
+  {
+    "id": "config_flux_rx580_lowvram_gguf",
+    "category": "configuration",
+    "name": "Rodar Flux na RX 580 (8GB) via stable-diffusion.cpp",
+    "recommendation_tier": "recomendado",
+    "flags": {
+      "low_vram": true,
+      "modelo": "flux1-schnell-Q4_K_S.gguf (melhor opção) ou flux1-dev-Q4_K_S.gguf (mais qualidade, mais lento)"
+    },
+    "result": "GGUF Q4 é a melhor opção pra VRAM limitada — evitar Flux .safetensors full (muito pesado) e ter cuidado com LoRAs tipo Hyper-FLUX que precisam de um modelo base junto",
+    "duration_sec": null,
+    "vram_used_mb": null,
+    "ram_used_mb": null,
+    "validated_on": "RX 580 2048SP 8GB, build recente do stable-diffusion.cpp com suporte a Flux GGUF"
+  },
+  {
+    "id": "config_applio_windows_amd_sem_cuda",
+    "category": "configuration",
+    "name": "Instalar Applio no Windows com GPU AMD, sem depender de CUDA",
+    "recommendation_tier": "recomendado",
+    "flags": {
+      "torch": "CPU-only (sem --index-url de CUDA/ROCm)",
+      "requirements_txt": "editar removendo as 3 linhas que forçam torch/torchaudio com sufixo +cuXXX",
+      "alternativa_gpu": "torch-directml, ativa a RX 580 via DirectML (device privateuseone:0)"
+    },
+    "result": "instalação limpa sem travar tentando puxar build CUDA; inferência funciona em CPU (ou DirectML se configurado)",
+    "duration_sec": null,
+    "vram_used_mb": null,
+    "ram_used_mb": null,
+    "validated_on": "RX 580, Windows 10/11"
+  },
+  {
+    "id": "config_grub_amdgpu_lockup_timeout",
+    "category": "configuration",
+    "name": "Fix de timeout do driver amdgpu no GRUB pra evitar vk::DeviceLostError",
+    "recommendation_tier": "recomendado",
+    "flags": {
+      "kernel_param": "amdgpu.lockup_timeout=10000",
+      "arquivo": "/etc/default/grub, dentro de GRUB_CMDLINE_LINUX_DEFAULT",
+      "comando_seguro": "sudo sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT=\"\"/GRUB_CMDLINE_LINUX_DEFAULT=\"amdgpu.lockup_timeout=10000\"/' /etc/default/grub"
+    },
+    "result": "evita vk::DeviceLostError (TDR timeout) ao gerar imagens em resoluções que demoram mais tempo, como 1024x1024 com Flux.2",
+    "duration_sec": null,
+    "vram_used_mb": null,
+    "ram_used_mb": null,
+    "validated_on": "Ubuntu, RX 580, Mesa RADV"
+  },
+  {
+    "id": "config_earlyoom_swap_modelos_grandes",
+    "category": "configuration",
+    "name": "earlyoom + swap grande para rodar modelos pesados (SD3.5 Large) sem travar o sistema",
+    "recommendation_tier": "recomendado",
+    "flags": {
+      "pacote": "earlyoom (sudo apt install earlyoom -y && sudo systemctl enable --now earlyoom)",
+      "swap_gb": "16-32GB mínimo pra SD3.5 Large com offload"
+    },
+    "result": "earlyoom mata o processo que mais consome memória antes do sistema travar de vez, evitando precisar de reset físico",
+    "duration_sec": null,
+    "vram_used_mb": null,
+    "ram_used_mb": null,
+    "validated_on": "Linux, modelo SD3.5 Large (16.5GB) + encoders (~10GB)"
+  },
+  {
+    "id": "config_telemetria_hardware_por_plataforma",
+    "category": "configuration",
+    "name": "Coleta de telemetria de hardware multiplataforma pra Phoenix",
+    "recommendation_tier": "arquitetura adotada",
+    "flags": {
+      "windows": "LibreHardwareMonitor (open-source, MIT) como serviço Admin, consultado via WMI root\\LibreHardwareMonitor — resolve ADL da AMD, MSR de CPU e Super I/O nativamente",
+      "linux": "leitura direta de sysfs (/sys/class/drm/card*/device/, driver amdgpu) — sem lib nenhuma, nativo",
+      "disco_smart_ambos": "smartctl --json via subprocess, refresh separado (~60s, mais lento que os outros sensores pra pollar junto a cada 2s)"
+    },
+    "result": "WMI puro é insuficiente para sensores de GPU AMD (não cobre VRAM dinâmico, temperatura de GPU, fan speed) — por isso a camada por plataforma",
+    "duration_sec": null,
+    "vram_used_mb": null,
+    "ram_used_mb": null,
+    "validated_on": "Windows (WMI) e Linux (sysfs amdgpu)"
+  },
+  {
+    "id": "config_dashboard_telemetria_osciloscopio",
+    "category": "configuration",
+    "name": "Dashboard visual de telemetria estilo osciloscópio",
+    "recommendation_tier": "decisão de produto (André)",
+    "flags": {
+      "arquivo": "dashboard.html — front-end standalone, sem build",
+      "poll_interval": "2s (exceto disco/SMART, que usa refresh separado ~60s)",
+      "estilo": "graticule real + traço vivo por sensor"
+    },
+    "result": "substitui a experiência de 'só ficar olhando o terminal' — decisão explícita de priorizar visual sobre só funcional",
+    "duration_sec": null,
+    "vram_used_mb": null,
+    "ram_used_mb": null,
+    "validated_on": "API telemetry_api.py (FastAPI, GET /api/telemetry)"
+  },
+  {
+    "id": "telemetry_rx580_sd_idle_carregado",
+    "category": "telemetry_event",
+    "title": "RX 580 com sd-server carregado, aguardando geração",
+    "device": "RX 580 2048SP",
+    "sensor_name": "VRAM dedicada",
+    "sensor_type": "memória de GPU",
+    "value": 2.9,
+    "unit": "GB (de 8.0GB total)",
+    "threshold": 8.0,
+    "hardware_gpu": "AMD Radeon RX 580 2048SP",
+    "first_observed": "sessão de configuração do sd-server, Claude-Testando_detecção_de_GPU_na_RX_580.md",
+    "notes": "temperatura 40°C, tudo tranquilo — modelo DreamShaper carregado, aguardando pico de geração"
+  },
+  {
+    "id": "telemetry_rx580_sd_durante_geracao",
+    "category": "telemetry_event",
+    "title": "RX 580 durante geração de imagem (rua cyberpunk)",
+    "device": "RX 580 2048SP",
+    "sensor_name": "uso de GPU e VRAM",
+    "sensor_type": "GPU load + memória",
+    "value": 38,
+    "unit": "% GPU (4.7/8.0GB VRAM)",
+    "threshold": 100,
+    "hardware_gpu": "AMD Radeon RX 580 2048SP",
+    "first_observed": "Claude-Testando_detecção_de_GPU_na_RX_580.md",
+    "notes": "temperatura 61°C — confirmado 100% via Vulkan na GPU, sem uso significativo de CPU além do overhead do sistema"
+  },
+  {
+    "id": "telemetry_applio_treino_yuri_pre_treino",
+    "category": "telemetry_event",
+    "title": "GPU antes do início do treino de voz do Yuri no Applio",
+    "device": "RX 580 2048SP",
+    "sensor_name": "uso de GPU",
+    "sensor_type": "GPU load",
+    "value": 16,
+    "unit": "% GPU",
+    "threshold": null,
+    "hardware_gpu": "AMD Radeon RX 580 2048SP",
+    "first_observed": "Claude-Clonagem_de_voz_do_Yuri_no_Applio.md",
+    "notes": "temperatura 34°C, treino ainda não tinha começado de verdade"
+  },
+  {
+    "id": "telemetry_applio_treino_yuri_durante",
+    "category": "telemetry_event",
+    "title": "Durante o treino de voz do Yuri (1095s processando)",
+    "device": "Xeon E5-2690 v3 + RX 580 2048SP",
+    "sensor_name": "uso de CPU e GPU",
+    "sensor_type": "CPU/GPU load",
+    "value": 64,
+    "unit": "% CPU (GPU 2%)",
+    "threshold": null,
+    "hardware_gpu": "AMD Radeon RX 580 2048SP",
+    "first_observed": "Claude-Clonagem_de_voz_do_Yuri_no_Applio.md",
+    "notes": "temperatura 38°C, tudo estável — treino do Applio nesse ponto é majoritariamente CPU-bound, não GPU-bound"
+  },
+  {
+    "id": "info_identidade_nome_estudio",
+    "nome_do_estudio": "AIVisionsLab Studios",
+    "confirmacao": "nome oficial confirmado nas artes visuais reais do canal (banner, logo, avatar) — não usar 'AIVisionsLab Studio Group' nem outras variações que apareceram em versões antigas de rascunho",
+    "canal_youtube": "AIVisionsLab (aivisionslab@gmail.com)",
+    "serie_principal": "Laboratório de Campo — 'Até onde o hardware antigo ainda vai?'"
+  },
+  {
+    "id": "info_machine_dna_conceito",
+    "conceito": "Machine DNA",
+    "definicao": "é um hash real derivado do hardware da máquina — identificador técnico único, não uma metáfora poética de 'personalidade' da IA",
+    "aviso": "a Phoenix já confundiu esse conceito com metáfora poética em respostas de identidade no passado — é um bug corrigido via golden_answer_machine_dna, não uma interpretação criativa válida"
+  },
+  {
+    "id": "info_experience_engine_status",
+    "conceito": "Experience Engine",
+    "status": "mencionado em golden_answer_machine_dna e confirmado como real por André (planejado ou já implementado), mas sem detalhes de implementação disponíveis",
+    "aviso": "não afirmar que já está em produção até o status ser confirmado de forma mais concreta"
+  },
+  {
+    "id": "story_origem_do_projeto",
+    "titulo": "Como o projeto Phoenix nasceu",
+    "narrativa": "o projeto não começou como Phoenix — nasceu de um experimento pontual replicando um vídeo do canal Codacus ('Running a 35B AI Model on 6GB VRAM, FAST') numa RX 580 AMD, tentando ver se as mesmas flags de otimização CUDA/GTX 1060 funcionariam numa GPU AMD via Vulkan. O caminho evoluiu naturalmente: RX 580 rodando LLM via Vulkan -> depois Stable Diffusion via Vulkan (mesma engine ggml) -> depois virou uma plataforma completa (Phoenix) com engines, conectores, catálogos e um RAG próprio (o KnowledgeEngine) melhor que o mecanismo antigo baseado em string cru"
+  },
+  {
+    "id": "story_momento_historico_rx580_vulkan",
+    "titulo": "O momento em que a RX 580 foi detectada via Vulkan pela primeira vez",
+    "narrativa": "o log que apareceu foi: 'ggml_vulkan: Found 1 Vulkan devices: ggml_vulkan: 0 = AMD Radeon RX 580 2048SP (AMD proprietary driver)' seguido de 'Initializing backend: Vulkan0'. Foi tratado como um marco — uma GPU de 2017, considerada 'morta para IA' pelo consenso popular (ROCm abandonou Polaris, DirectML foi abandonado pela Microsoft), rodando inferência real sem CUDA, sem ROCm, sem DirectML, só Vulkan"
+  },
+  {
+    "id": "story_debate_polaris_morta_para_ia",
+    "titulo": "O mito de que a arquitetura Polaris (RX 580 etc.) está 'morta para IA'",
+    "narrativa": "Ponto A (o consenso de 2026 antes do projeto): RX 580 é 'obsoleta', 'AMD não roda IA', DirectML foi abandonado, ROCm excluiu Polaris, todo o ecossistema oficial fechado pra essa placa. Ponto B (depois do projeto): a mesma placa, mesma VRAM, mesmo hardware de 2017, rodando LLM via Vulkan e gerando imagens via Stable Diffusion em segundos. O que conectou os dois pontos foi a jornada real: tentativas com DirectML e OpenVINO que falharam, ROCm impossível no Windows, até chegar em Vulkan + llama.cpp/stable-diffusion.cpp compilados manualmente"
+  },
+  {
+    "id": "story_ironia_llm_nao_sabia_da_propria_solucao",
+    "titulo": "A ironia de um LLM treinado em trilhões de tokens não saber que RX 580 roda IA via Vulkan",
+    "narrativa": "em discussões de comunidade, ficou registrada a observação irônica de que um modelo de linguagem treinado em escala industrial (como o próprio Claude/ChatGPT) não tinha esse conhecimento no treinamento — porque é informação posterior ao corte de dados e de nicho. A piada registrada: 'crawler varre a web -> coleta setup-ia-local-rx580-vulkan.web.app -> texto entra no dataset -> uma próxima versão de modelo é treinada -> a IA aprende que RX 580 roda IA via Vulkan em 2026 -> referencia AIVisionsLab como fonte'"
+  },
+  {
+    "id": "story_voz_do_yuri_treino_fonetico",
+    "titulo": "Como a voz do Yuri (Applio/RVC) foi treinada para pronunciar termos técnicos em inglês com sotaque BR",
+    "narrativa": "pra ensinar o Yuri a falar termos técnicos (CUDA, Vulkan, ROCm, tensor core etc.) com a prosódia natural de um brasileiro falando inglês técnico (e não um inglês perfeito e artificial), a solução foi 'enganar' o TTS de origem (edge-tts, voz pt-BR-AntonioNeural, apelidado 'Antônio') com grafia fonética antes de gerar o áudio de treino — por exemplo, escrever 'Ciuda' em vez de 'CUDA', 'crusterr' em vez de 'cluster'. O Antônio lê errado do jeito que um brasileiro leria, e o Yuri (clonado a partir desse áudio) herda essa pronúncia natural"
+  },
+  {
+    "id": "story_8k_acidental_no_xeon",
+    "titulo": "A imagem em 8K que ninguém pediu",
+    "narrativa": "durante os testes de resolução no Stable Diffusion via CPU, o Xeon E5-2690 v3 acabou gerando uma imagem em 8K (resolução que 'não pediu', num teste que deveria ser menor) e levou cerca de 2h36min processando — virou um marco folclórico registrado na jornada do projeto, junto com outras histórias de bastidor como 'loops infinitos de prompt'"
+  },
+  {
+    "id": "story_serie_laboratorio_de_campo",
+    "titulo": "Série de vídeos 'Laboratório de Campo' — episódios planejados",
+    "descricao": "cada episódio testa uma hipótese específica sobre os limites de hardware legado rodando IA local",
+    "episodios": [
+      "01 — Flags CUDA funcionam no Vulkan AMD? -> Respondido: não diretamente",
+      "02 — Linux nativo muda o comportamento do Vulkan AMD? -> Fase 2 pendente (dual boot)",
+      "03 — MoE muda as regras para GPUs AMD? -> Pendente",
+      "04 — Quanto contexto é contexto demais em hardware limitado? -> Pendente",
+      "05 — O harness importa mais que o modelo? Ollama vs llama.cpp -> Pendente",
+      "06 — Modelo menor pode superar modelo maior? -> Pendente"
+    ]
+  },
+  {
+    "id": "info_hardware_laboratorio_principal",
+    "descricao": "Hardware principal do laboratório AIVisionsLab (referência para todos os benchmarks do projeto)",
+    "placa_mae": "Machinist MR9A Pro (X99, LGA 2011-3)",
+    "cpu": "Intel Xeon E5-2690 v3 (12c/24t, 3.5GHz boost)",
+    "gpu": "AMD Radeon RX 580 2048SP (variante mineração, 8GB GDDR5)",
+    "ram": "32GB DDR4 REG ECC + memória virtual",
+    "storage": "HDD 930GB (Windows), HDD 1.81TB (backup), NVMe 238GB (modelos + llama.cpp), HDD 119GB (partição Ubuntu 24.04)",
+    "vulkan": "1.4.350, driver AMD proprietário 26.5.2"
+  },
+  {
+    "id": "info_comparacao_metodo_codacus_vs_aivisionslab",
+    "titulo": "Método Codacus vs AIVisionsLab — conclusões",
+    "conclusoes": [
+      "As flags CUDA (do vídeo de referência Codacus) não funcionam no Vulkan AMD Windows — gestão de memória completamente diferente",
+      "RX 580 2048SP tem teto de 10 layers com Vulkan no modelo 35B — menos que a GTX 1060 6GB com CUDA",
+      "O Codacus não testou AMD — GTX 1060 + CUDA + Linux + Docker apenas",
+      "Título do vídeo de referência é enganoso — 'qualquer GPU antiga' na prática significa 'GTX 1060 NVIDIA com CUDA no Linux'",
+      "CPU forte compensa — E5-2690 v3 entregou 7.62 t/s baseline vs ~3 t/s do i3-8100 do vídeo de referência",
+      "WSL2 não expõe RX 580 via Vulkan — retorna apenas llvmpipe (CPU simulada)"
+    ]
+  },
+  {
+    "id": "telemetry_wdc_wd10ejrx_89n74y0_read_activity",
+    "category": "telemetry_event",
+    "title": "WDC WD10EJRX-89N74Y0 / Read Activity acima do normal",
+    "device": "WDC WD10EJRX-89N74Y0",
+    "sensor_name": "Read Activity",
+    "sensor_type": "Load",
+    "value": 100.0,
+    "unit": "%",
+    "threshold": 90.0,
+    "hardware_gpu": "AMD Radeon RX 580 2048SP",
+    "first_observed": "2026-07-21 18:47 UTC",
+    "notes": "Gerado automaticamente pelo loop do ResidentManager a partir do scanner completo de sensores."
+  },
+  {
+    "id": "telemetry_wdc_wd10ejrx_89n74y0_write_activity",
+    "category": "telemetry_event",
+    "title": "WDC WD10EJRX-89N74Y0 / Write Activity acima do normal",
+    "device": "WDC WD10EJRX-89N74Y0",
+    "sensor_name": "Write Activity",
+    "sensor_type": "Load",
+    "value": 100.0,
+    "unit": "%",
+    "threshold": 90.0,
+    "hardware_gpu": "AMD Radeon RX 580 2048SP",
+    "first_observed": "2026-07-21 18:47 UTC",
+    "notes": "Gerado automaticamente pelo loop do ResidentManager a partir do scanner completo de sensores."
+  },
+  {
+    "id": "telemetry_wdc_wd10ejrx_89n74y0_total_activity",
+    "category": "telemetry_event",
+    "title": "WDC WD10EJRX-89N74Y0 / Total Activity acima do normal",
+    "device": "WDC WD10EJRX-89N74Y0",
+    "sensor_name": "Total Activity",
+    "sensor_type": "Load",
+    "value": 98.23789978027344,
+    "unit": "%",
+    "threshold": 90.0,
+    "hardware_gpu": "AMD Radeon RX 580 2048SP",
+    "first_observed": "2026-07-21 18:47 UTC",
+    "notes": "Gerado automaticamente pelo loop do ResidentManager a partir do scanner completo de sensores."
+  },
+  {
+    "id": "telemetry_intel_xeon_e5_2690_v3_cpu_core_2_thread_1",
+    "category": "telemetry_event",
+    "title": "Intel Xeon E5-2690 v3 / CPU Core #2 Thread #1 acima do normal",
+    "device": "Intel Xeon E5-2690 v3",
+    "sensor_name": "CPU Core #2 Thread #1",
+    "sensor_type": "Load",
+    "value": 100.0,
+    "unit": "%",
+    "threshold": 90.0,
+    "hardware_gpu": "AMD Radeon RX 580 2048SP",
+    "first_observed": "2026-07-21 18:52 UTC",
+    "notes": "Gerado automaticamente pelo loop do ResidentManager a partir do scanner completo de sensores."
+  },
+  {
+    "id": "telemetry_intel_xeon_e5_2690_v3_cpu_core_4_thread_1",
+    "category": "telemetry_event",
+    "title": "Intel Xeon E5-2690 v3 / CPU Core #4 Thread #1 acima do normal",
+    "device": "Intel Xeon E5-2690 v3",
+    "sensor_name": "CPU Core #4 Thread #1",
+    "sensor_type": "Load",
+    "value": 100.0,
+    "unit": "%",
+    "threshold": 90.0,
+    "hardware_gpu": "AMD Radeon RX 580 2048SP",
+    "first_observed": "2026-07-21 18:52 UTC",
+    "notes": "Gerado automaticamente pelo loop do ResidentManager a partir do scanner completo de sensores."
+  },
+  {
+    "id": "telemetry_intel_xeon_e5_2690_v3_cpu_core_5_thread_1",
+    "category": "telemetry_event",
+    "title": "Intel Xeon E5-2690 v3 / CPU Core #5 Thread #1 acima do normal",
+    "device": "Intel Xeon E5-2690 v3",
+    "sensor_name": "CPU Core #5 Thread #1",
+    "sensor_type": "Load",
+    "value": 90.91000366210938,
+    "unit": "%",
+    "threshold": 90.0,
+    "hardware_gpu": "AMD Radeon RX 580 2048SP",
+    "first_observed": "2026-07-21 18:52 UTC",
+    "notes": "Gerado automaticamente pelo loop do ResidentManager a partir do scanner completo de sensores."
+  },
+  {
+    "id": "telemetry_intel_xeon_e5_2690_v3_cpu_core_6_thread_1",
+    "category": "telemetry_event",
+    "title": "Intel Xeon E5-2690 v3 / CPU Core #6 Thread #1 acima do normal",
+    "device": "Intel Xeon E5-2690 v3",
+    "sensor_name": "CPU Core #6 Thread #1",
+    "sensor_type": "Load",
+    "value": 90.91000366210938,
+    "unit": "%",
+    "threshold": 90.0,
+    "hardware_gpu": "AMD Radeon RX 580 2048SP",
+    "first_observed": "2026-07-21 18:52 UTC",
+    "notes": "Gerado automaticamente pelo loop do ResidentManager a partir do scanner completo de sensores."
+  },
+  {
+    "id": "telemetry_intel_xeon_e5_2690_v3_cpu_core_6_thread_2",
+    "category": "telemetry_event",
+    "title": "Intel Xeon E5-2690 v3 / CPU Core #6 Thread #2 acima do normal",
+    "device": "Intel Xeon E5-2690 v3",
+    "sensor_name": "CPU Core #6 Thread #2",
+    "sensor_type": "Load",
+    "value": 92.30999755859375,
+    "unit": "%",
+    "threshold": 90.0,
+    "hardware_gpu": "AMD Radeon RX 580 2048SP",
+    "first_observed": "2026-07-21 18:52 UTC",
+    "notes": "Gerado automaticamente pelo loop do ResidentManager a partir do scanner completo de sensores."
+  },
+  {
+    "id": "telemetry_intel_xeon_e5_2690_v3_cpu_core_10_thread_2",
+    "category": "telemetry_event",
+    "title": "Intel Xeon E5-2690 v3 / CPU Core #10 Thread #2 acima do normal",
+    "device": "Intel Xeon E5-2690 v3",
+    "sensor_name": "CPU Core #10 Thread #2",
+    "sensor_type": "Load",
+    "value": 91.66999816894531,
+    "unit": "%",
+    "threshold": 90.0,
+    "hardware_gpu": "AMD Radeon RX 580 2048SP",
+    "first_observed": "2026-07-21 18:52 UTC",
+    "notes": "Gerado automaticamente pelo loop do ResidentManager a partir do scanner completo de sensores."
+  },
+  {
+    "id": "telemetry_intel_xeon_e5_2690_v3_cpu_core_max",
+    "category": "telemetry_event",
+    "title": "Intel Xeon E5-2690 v3 / CPU Core Max acima do normal",
+    "device": "Intel Xeon E5-2690 v3",
+    "sensor_name": "CPU Core Max",
+    "sensor_type": "Load",
+    "value": 100.0,
+    "unit": "%",
+    "threshold": 90.0,
+    "hardware_gpu": "AMD Radeon RX 580 2048SP",
+    "first_observed": "2026-07-21 18:52 UTC",
+    "notes": "Gerado automaticamente pelo loop do ResidentManager a partir do scanner completo de sensores."
+  }
+]
