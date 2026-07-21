@@ -108,8 +108,8 @@ O Phoenix Engine opera como um **orquestrador puro**: ele não reimplementa infe
 | `catalog/` | Catálogo de modelos e regras de recomendação por hardware |
 | `phoenix_kernel/` | Núcleo de execução — planner, RAG, safety rules |
 | `web/` | Dashboard web (Mission Control, System Tuner, Terminal Deck) |
-| `api_server` | Backend da API consumida pelo dashboard |
-| `install_phoenix` | Instalador — resolve e baixa dependências de terceiros |
+| `api_server.py` | Backend da API consumida pelo dashboard |
+| `install_phoenix.ps1` | Instalador — resolve e baixa dependências de terceiros |
 
 ---
 
@@ -178,7 +178,7 @@ O catálogo completo (regras de classificação, min VRAM, estratégia de offloa
 ```powershell
 git clone https://github.com/aivisionslab-studios/phoenix-engine.git
 cd phoenix-engine
-.\install_phoenix
+.\install_phoenix.ps1
 ```
 
 O instalador detecta seu hardware, sugere uma missão da App Store e resolve as dependências de terceiros automaticamente (ver seção abaixo).
@@ -207,7 +207,7 @@ O Phoenix Engine **não versiona nem distribui** código de terceiros — ele de
 | [ComfyUI](https://github.com/comfyanonymous/ComfyUI) | Workflows de geração de imagem |
 | [LibreHardwareMonitor](https://github.com/LibreHardwareMonitor/LibreHardwareMonitor) | Telemetria de hardware |
 
-Esses projetos têm suas próprias licenças — respeite-as. O `install_phoenix` os busca a partir de um manifest versionado, sempre pinado em commit/tag específico para evitar quebras por mudanças upstream.
+Esses projetos têm suas próprias licenças — respeite-as. O `install_phoenix.ps1` os busca a partir de um manifest versionado, sempre pinado em commit/tag específico para evitar quebras por mudanças upstream.
 
 ---
 
@@ -220,10 +220,10 @@ phoenix-engine/
 ├── catalog/                # Catálogo de modelos + regras de recomendação
 ├── phoenix_kernel/          # Planner, RAG, safety rules
 ├── web/                    # Dashboard (Mission Control)
-├── api_server               # Backend da API
-├── install_phoenix           # Instalador
+├── api_server.py             # Backend da API
+├── install_phoenix.ps1        # Instalador
 ├── .gitignore
-├── LICENSE                   # CC BY-NC 4.0
+├── LICENSE.md                 # CC BY-NC 4.0
 ├── pyproject.toml
 └── README.md
 ```
@@ -233,7 +233,7 @@ phoenix-engine/
 ## Troubleshooting
 
 **Dashboard não sobe em `localhost:8000`**
-Confirme que `api_server` está rodando e que a porta não está em uso por outro processo.
+Confirme que `api_server.py` está rodando e que a porta não está em uso por outro processo.
 
 **GPU não aparece no System Tuner**
 Verifique se o backend Vulkan está instalado e se o driver da GPU está atualizado — veja o guia detalhado de diagnóstico Vulkan em [`rx580-local-ai-guide`](https://github.com/aivisionslab-studios/rx580-local-ai-guide).
