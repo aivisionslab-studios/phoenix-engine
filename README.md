@@ -197,6 +197,14 @@ O catálogo completo (regras de classificação, min VRAM, estratégia de offloa
 
 2. **Rode o instalador principal** em um PowerShell comum (ele mesmo pede elevação de Administrador quando precisar):
 
+   > ⚠️ **Execution Policy:** por padrão, o Windows bloqueia a execução de scripts `.ps1` não assinados digitalmente (erro `UnauthorizedAccess` / `PSSecurityException`). Antes de rodar o instalador, libere a execução **apenas para essa sessão do terminal**:
+   >
+   > ```powershell
+   > Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+   > ```
+   >
+   > Isso não altera nenhuma configuração permanente do sistema — vale só até você fechar essa janela do PowerShell. Se preferir liberar de forma persistente para o seu usuário, use `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned` (permite scripts locais sem assinatura, mas ainda exige assinatura para scripts baixados da internet).
+
    ```powershell
    .\install_phoenix.ps1
    ```
