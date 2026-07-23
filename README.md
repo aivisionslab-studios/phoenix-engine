@@ -184,7 +184,14 @@ O catálogo completo (regras de classificação, min VRAM, estratégia de offloa
 
 - Windows 10 ou 11, com **PowerShell 5.1+** (já vem no sistema)
 - Conta com privilégios de Administrador
-- Conexão com a internet (o instalador baixa Python, Git, Docker Desktop e outras dependências via [Winget](https://learn.microsoft.com/pt-br/windows/package-manager/winget/))
+- Conexão com a internet (o instalador baixa Python, Docker Desktop e outras dependências via [Winget](https://learn.microsoft.com/pt-br/windows/package-manager/winget/))
+- **Git instalado antes de qualquer outra coisa.** O `windows.ps1` reinstala/atualiza o Git como parte do provisionamento, mas o Passo 1 abaixo já usa `git clone` — então numa instalação limpa do Windows (sem Git ainda) você precisa instalá-lo manualmente primeiro:
+
+  ```powershell
+  winget install --id Git.Git -e --source winget
+  ```
+
+  Feche e reabra o PowerShell depois de instalar, para o `PATH` ser atualizado.
 
 ### Passo a passo
 
@@ -210,7 +217,7 @@ O catálogo completo (regras de classificação, min VRAM, estratégia de offloa
    ```
 
    O script detecta que está no Windows e chama `install\windows.ps1`, que:
-   - Instala (ou repara) Python 3.12, Git, Docker Desktop, .NET SDK, Vulkan SDK e Visual Studio Build Tools via Winget
+   - Garante/atualiza Python 3.12, Docker Desktop, .NET SDK, Vulkan SDK e Visual Studio Build Tools via Winget (o Git já deve estar instalado, conforme os Pré-requisitos acima)
    - Garante que o Docker Desktop esteja realmente rodando (sobe o app se necessário)
    - Instala as dependências Python específicas do Windows (`pythonnet`, `HardwareMonitor`, `wmi`, `pywin32`) — necessárias para ler os sensores de CPU/GPU/disco/placa-mãe
    - Roda um self-test dos sensores de GPU antes de prosseguir

@@ -7,10 +7,25 @@ class LinuxTelemetryProvider(ITelemetryProvider):
     def get_metrics(self) -> TelemetrySnapshot:
         cpu_usage = psutil.cpu_percent(interval=None)
         ram_usage = psutil.virtual_memory()
+        gpu_temp = gpu_load = gpu_vram_used = None
+
+        try:
+            # Antes este provider nunca chamava o core - os campos de GPU
+            # ficavam sempre None (N/A no painel), mesmo com o core.py ja
+            # sabendo ler sensores AMD via sysfs/DRM. Espelhando o
+            # windows.py: get_gpu_sensors() e' sincrona, devolve um dict.
+            from ..core import get_gpu_sensors
+            gpu_sensors = get_gpu_sensors()
+            gpu_temp = gpu_sensors.get("temperature_celsius")
+            gpu_load = gpu_sensors.get("load_percent")
+            gpu_vram_used = gpu_sensors.get("vram_used_mb")
+        except Exception:
+            pass
+
         return TelemetrySnapshot(
             cpu_usage_percent=cpu_usage,
             ram_used_mb=int(ram_usage.used / (1024 * 1024)),
-            gpu_temp_celsius=None,
-            gpu_load_percent=None,
-            gpu_vram_used_mb=None
+            gpu_temp_celsius=gpu_temp,
+            gpu_load_percent=gpu_load,
+            gpu_vram_used_mb=gpu_vram_used
         )
