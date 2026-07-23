@@ -2,6 +2,7 @@ from __future__ import annotations
 import asyncio
 import json
 import hashlib
+import time
 import urllib.request
 import urllib.error
 import logging
@@ -21,6 +22,13 @@ logger = logging.getLogger(__name__)
 
 RECOMMENDATION_THRESHOLD = 0.45
 COLLECTION_NAME = "aivisions_knowledge_base"
+
+# Intervalo mínimo entre novas tentativas de checar/baixar o modelo de
+# embedding quando ele está indisponível. Evita bater no Ollama a cada
+# chamada de _embed() enquanto o modelo ainda não existe — alinhado ao
+# ciclo do ResidentManager (300s), pra se recuperar sozinho se alguém
+# rodar `ollama pull` manualmente enquanto a Phoenix está no ar.
+EMBED_MODEL_RECHECK_INTERVAL_SEC = 300
 
 
 # ============================================================================
@@ -195,10 +203,15 @@ class KnowledgeEngine(IEngine):
         self._client: Optional[chromadb.ClientAPI] = None
         self._collection = None
 
+        # Estado do "self-heal" de modelo de embedding — ver
+        # _ensure_embed_model(). None = ainda não checado nesta sessão.
+        self._embed_model_ready: Optional[bool] = None
+        self._embed_model_last_check: float = 0.0
+
         self._descriptor = EngineDescriptor(
             id="knowledge",
             name="AIVisions Knowledge Engine",
-            version="3.1.0",
+            version="3.1.1",
             sdk_version="1.0.0",
             capabilities=(Capability(name="rag", version="2.0"),),
         )
@@ -207,7 +220,88 @@ class KnowledgeEngine(IEngine):
     def descriptor(self) -> EngineDescriptor:
         return self._descriptor
 
+    def _model_exists(self) -> bool:
+        """Verifica se self.embed_model já está baixado no Ollama local,
+        consultando /api/tags (mesma API que `ollama list` usa por baixo)."""
+        req = urllib.request.Request(f"{self.ollama_url}/api/tags", method="GET")
+        try:
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+                # nomes vêm como "nomic-embed-text:latest" — compara só a
+                # parte antes dos dois-pontos pra não depender da tag exata.
+                names = {
+                    m.get("name", "").split(":")[0]
+                    for m in data.get("models", [])
+                }
+                return self.embed_model.split(":")[0] in names
+        except Exception as e:
+            logger.warning(f"KnowledgeEngine: falha ao consultar {self.ollama_url}/api/tags: {e}")
+            return False
+
+    def _pull_embed_model(self) -> bool:
+        """Baixa self.embed_model via Ollama quando ele não está instalado.
+        Isso é o que faltou no install_phoenix.ps1 original: só o modelo de
+        chat (qwen3:8b) era baixado, não o de embedding. Em vez de deixar o
+        RAG silenciosamente vazio (com uma cascata de 404 em cada
+        documento), a Phoenix tenta se auto-corrigir aqui."""
+        logger.warning(
+            f"KnowledgeEngine: modelo de embedding '{self.embed_model}' não encontrado "
+            f"no Ollama local. Tentando baixar automaticamente (pode levar alguns "
+            f"minutos na primeira vez)..."
+        )
+        payload = json.dumps({"model": self.embed_model, "stream": False}).encode("utf-8")
+        req = urllib.request.Request(
+            f"{self.ollama_url}/api/pull",
+            data=payload,
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=600) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+                status = data.get("status", "")
+                if status == "success":
+                    logger.info(f"KnowledgeEngine: '{self.embed_model}' baixado com êxito.")
+                    return True
+                logger.error(
+                    f"KnowledgeEngine: pull de '{self.embed_model}' retornou status "
+                    f"inesperado: '{status}'."
+                )
+                return False
+        except Exception as e:
+            logger.error(
+                f"KnowledgeEngine: falha ao baixar '{self.embed_model}' automaticamente "
+                f"({e}). Rode manualmente: docker exec ollama ollama pull {self.embed_model}"
+            )
+            return False
+
+    def _ensure_embed_model(self) -> bool:
+        """Garante (com cache + cooldown) que o modelo de embedding está
+        disponível antes de qualquer chamada a /api/embed. Só reconsulta o
+        Ollama a cada EMBED_MODEL_RECHECK_INTERVAL_SEC — evita martelar a
+        API a cada documento enquanto o modelo estiver ausente, mas ainda
+        se recupera sozinho se alguém rodar `ollama pull` manualmente
+        enquanto a Phoenix está no ar."""
+        now = time.monotonic()
+        if self._embed_model_ready and (now - self._embed_model_last_check) < EMBED_MODEL_RECHECK_INTERVAL_SEC:
+            return True
+        if self._embed_model_ready is False and (now - self._embed_model_last_check) < EMBED_MODEL_RECHECK_INTERVAL_SEC:
+            return False
+
+        self._embed_model_last_check = now
+        if self._model_exists():
+            self._embed_model_ready = True
+            return True
+
+        self._embed_model_ready = self._pull_embed_model()
+        return self._embed_model_ready
+
     def _embed(self, text: str) -> Optional[list]:
+        if not self._ensure_embed_model():
+            # Já logamos o motivo em _pull_embed_model()/_model_exists() —
+            # aqui só evita a chamada HTTP fadada a dar 404 de novo.
+            return None
+
         payload = json.dumps({"model": self.embed_model, "input": text}).encode("utf-8")
         req = urllib.request.Request(
             f"{self.ollama_url}/api/embed",
@@ -225,6 +319,10 @@ class KnowledgeEngine(IEngine):
                 return None
         except Exception as e:
             logger.error(f"KnowledgeEngine: falha ao chamar Ollama /api/embed: {e}")
+            # Se o modelo "sumiu" entre o check e agora (ex: removido
+            # manualmente), força uma reavaliação na próxima chamada em
+            # vez de esperar o cooldown inteiro.
+            self._embed_model_ready = None
             return None
 
     async def initialize(self) -> None:
@@ -239,6 +337,17 @@ class KnowledgeEngine(IEngine):
             name=COLLECTION_NAME,
             metadata={"hnsw:space": "cosine"},
         )
+
+        if not self._ensure_embed_model():
+            logger.error(
+                f"KnowledgeEngine: RAG indisponível nesta sessão — modelo de embedding "
+                f"'{self.embed_model}' não pôde ser baixado automaticamente. A base "
+                f"vetorial não será sincronizada até isso ser resolvido (rode "
+                f"'docker exec ollama ollama pull {self.embed_model}' manualmente e "
+                f"reinicie, ou aguarde {EMBED_MODEL_RECHECK_INTERVAL_SEC}s pra nova "
+                f"tentativa automática)."
+            )
+            return
 
         kb_path = Path(self.kb_json_path)
         if not kb_path.exists():

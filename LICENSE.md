@@ -12,11 +12,13 @@ Texto completo da licença: https://creativecommons.org/licenses/by-nc/4.0/deed.
 ## Resumo em linguagem simples
 
 Você tem permissão para:
+
 - ✅ Usar este projeto livremente, para fins pessoais ou educacionais
 - ✅ Copiar, modificar e redistribuir o código
 - ✅ Compartilhar suas próprias versões/modificações
 
 Desde que:
+
 - 📌 **Atribuição** — dê crédito ao AIVisionsLab Studio Group como autor original, com link para o repositório oficial
 - 🚫 **Não-Comercial** — não venda, revenda ou monetize este projeto (ou versões modificadas dele) sem autorização expressa e por escrito do AIVisionsLab Studio Group
 
@@ -25,27 +27,31 @@ Desde que:
 A Phoenix Engine 3.0 **não distribui nem embute** nenhum software de
 terceiros — ela orquestra, decide e executa ferramentas que permanecem
 instaladas de forma independente, incluindo (mas não se limitando a):
-- Docker / Docker Desktop
+
+- Docker / Docker Desktop (Windows) e Docker Engine (Ubuntu)
 - Ollama
 - llama.cpp
 - stable-diffusion.cpp
 - Open WebUI
 - ChromaDB
 - Vulkan SDK
-- Visual Studio Build Tools
+- Visual Studio Build Tools (Windows)
 - Git
+- LibreHardwareMonitor / HardwareMonitor (Windows) e lm-sensors (Ubuntu)
 
 A Phoenix apenas detecta, decide, orienta e automatiza o download, a
 compilação e a configuração dessas ferramentas diretamente de suas
-fontes oficiais. Cada uma delas permanece sob sua **própria licença
-original**, definida por seus respectivos autores/mantenedores. Ao
-utilizar a Phoenix Engine, você concorda em também respeitar os termos
-de licença de cada ferramenta de terceiro que ela instalar ou
-orquestrar em seu nome.
+fontes oficiais, tanto em Windows 10/11 quanto em Ubuntu 26.04. Cada uma
+delas permanece sob sua **própria licença original**, definida por seus
+respectivos autores/mantenedores. Ao utilizar a Phoenix Engine, você
+concorda em também respeitar os termos de licença de cada ferramenta de
+terceiro que ela instalar ou orquestrar em seu nome.
 
 Esta licença cobre exclusivamente:
+
 - O código-fonte deste repositório (kernel, engines, event bus, contratos, terminal web/CLI)
 - A arquitetura de decisão e orquestração (Knowledge Engine/RAG, Rules Engine, Runtime Engine, Mission Planner)
+- Os scripts de instalação multiplataforma (`install_phoenix.ps1`, `install/windows.ps1`, `install/linux.ps1`, `install/common.ps1`)
 - A documentação e os ativos (textos, manifesto, templates, interface visual) originais deste projeto
 
 ## Sobre os módulos irmãos do ecossistema AIVisions

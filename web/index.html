@@ -86,8 +86,16 @@ main { flex-grow: 1; min-height: 0; overflow: hidden; padding: 28px 32px; displa
 select.deck-select { background: var(--border); color: var(--text); font-size: 11px; padding: 5px 8px; border-radius: 4px; border: 1px solid var(--border); outline: none; font-family: var(--font-mono); }
 select.deck-select:hover { border-color: var(--dim); }
 
-.lower-grid { display: grid; grid-template-columns: 4fr 8fr; gap: 24px; flex-grow: 1; min-height: 0; }
-@media (max-width: 1000px) { .lower-grid { grid-template-columns: 1fr; overflow-y: auto; } }
+.lower-grid { display: grid; grid-template-columns: 4fr 8fr; grid-template-rows: auto 1fr; gap: 24px; flex-grow: 1; min-height: 0; }
+@media (max-width: 1000px) { .lower-grid { grid-template-columns: 1fr; grid-template-rows: auto auto auto; overflow-y: auto; } }
+.lower-grid .hwdev-summary-card { grid-column: 1; grid-row: 1; background: var(--panel); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+.lower-grid .telemetry-box { grid-column: 1; grid-row: 2; }
+.lower-grid .term-box { grid-column: 2; grid-row: 1 / span 2; }
+@media (max-width: 1000px) {
+    .lower-grid .hwdev-summary-card { grid-column: 1; grid-row: 1; }
+    .lower-grid .telemetry-box { grid-column: 1; grid-row: 2; }
+    .lower-grid .term-box { grid-column: 1; grid-row: 3; }
+}
 .telemetry-box { display: flex; flex-direction: column; background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 18px; font-family: var(--font-mono); min-height: 0; overflow-y: auto; }
 .telemetry-hd { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
 .telemetry-hd .lbl { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 700; }
@@ -222,7 +230,10 @@ footer { padding: 14px; border-top: 1px solid var(--border); background: rgba(20
                 <div class="hint">CLICK CARD TO VER DETALHES DO RAG</div>
             </button>
         </div>
-        <div class="card">
+    </section>
+
+    <section class="lower-grid">
+        <div class="card hwdev-summary-card">
             <button class="clickable-card" id="open-hw-devices-panel">
                 <div class="card-hd"><span class="tt">━━ HARDWARE DEVICES ━━</span><span class="ic">◫</span></div>
                 <div class="crow"><span class="lbl">DISPOSITIVOS ATIVOS</span><span class="val accent" id="hwdev-count-lbl">--</span></div>
@@ -231,9 +242,6 @@ footer { padding: 14px; border-top: 1px solid var(--border); background: rgba(20
                 <div class="hint">CLIQUE PARA VER TODOS OS SENSORES</div>
             </button>
         </div>
-    </section>
-
-    <section class="lower-grid">
         <div class="telemetry-box">
             <div class="telemetry-hd"><span class="lbl">System Telemetry</span></div>
             <div class="chart-shell">
@@ -429,7 +437,7 @@ footer { padding: 14px; border-top: 1px solid var(--border); background: rgba(20
     // ================= HARDWARE DEVICES (ALL SENSORS) =================
     let hwDevicesCache = [];
     let hwDevicesPollTimer = null;
-    let hwDevicesOpenNames = new Set(); // lembra quais dispositivos o usuário deixou abertos entre re-renders (poll a cada 3s)
+    let hwDeviceOpenName = null; // accordion: só um dispositivo aberto por vez (null = tudo colapsado)
 
     // Ícone por tipo de hardware (o valor de dev.type vem direto do HardwareMonitor/
     // LibreHardwareMonitorLib, ex: "Cpu", "GpuAmd", "Storage", "Motherboard"...).
@@ -532,7 +540,7 @@ footer { padding: 14px; border-top: 1px solid var(--border); background: rgba(20
 
             const details = document.createElement("details");
             details.className = "hwdev-device";
-            const shouldOpen = (q && shown) || hwDevicesOpenNames.has(dev.name);
+            const shouldOpen = (q && shown) || hwDeviceOpenName === dev.name;
             if (shouldOpen) details.setAttribute("open", "");
             details.innerHTML = `
                 <summary>
@@ -545,8 +553,15 @@ footer { padding: 14px; border-top: 1px solid var(--border); background: rgba(20
                 <div class="hwdev-body">${bodyHtml || '<p style="color:var(--dim); font-size:11px;">Sem sensores legíveis.</p>'}</div>
             `;
             details.addEventListener("toggle", () => {
-                if (details.open) hwDevicesOpenNames.add(dev.name);
-                else hwDevicesOpenNames.delete(dev.name);
+                if (details.open) {
+                    hwDeviceOpenName = dev.name;
+                    // accordion: fecha qualquer outro dispositivo que esteja aberto
+                    list.querySelectorAll(".hwdev-device").forEach(other => {
+                        if (other !== details) other.removeAttribute("open");
+                    });
+                } else if (hwDeviceOpenName === dev.name) {
+                    hwDeviceOpenName = null;
+                }
             });
             list.appendChild(details);
         });

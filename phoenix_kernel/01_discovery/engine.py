@@ -1,44 +1,36 @@
 import asyncio
 import logging
+import platform
 from typing import Any
 from .interfaces import IDiscoveryService
-
-# O import mudou: agora lê o discovery_core.py que está na mesma pasta
-from .discovery_core import HardwareDiscoveryCore
+from .providers.factory import get_discovery_provider
 
 logger = logging.getLogger(__name__)
 
 class DiscoveryEngine(IDiscoveryService):
     def __init__(self):
-        self._core = HardwareDiscoveryCore()
+        self.provider = get_discovery_provider()
         self._profile = None
 
     async def discover_hardware(self) -> dict[str, Any]:
-        logger.info("Kernel Discovery: Iniciando descoberta via HardwareDiscoveryCore...")
+        logger.info("Kernel Discovery: Iniciando descoberta via Provider...")
         loop = asyncio.get_running_loop()
         
-        # Roda o bloqueio do WMI/dxdiag numa thread separada para não travar o Kernel
-        self._profile = await loop.run_in_executor(None, self._core.discover)
+        snapshot = await loop.run_in_executor(None, self.provider.discover)
         
-        hw = self._profile.hardware
-        
-        backends = ["cpu"]
-        if any(g.supports_vulkan for g in hw.gpus):
-            backends.append("vulkan")
-
         data = {
             'os': {
-                'system': hw.operating_system.name if hasattr(hw, 'operating_system') and hw.operating_system else 'Unknown', 
-                'release': hw.operating_system.version if hasattr(hw, 'operating_system') and hw.operating_system else 'Unknown',
-                'machine': hw.operating_system.architecture if hasattr(hw, 'operating_system') and hw.operating_system else 'Unknown',
-                'processor': hw.cpu.model
+                'system': platform.system(),
+                'release': platform.release(),
+                'machine': platform.machine(),
+                'processor': snapshot.cpu.model
             },
             'cpu': {
-                'model': hw.cpu.model or 'Unknown CPU', 
-                'cores': hw.cpu.physical_cores or 1
+                'model': snapshot.cpu.model or 'Unknown CPU', 
+                'cores': snapshot.cpu.physical_cores or 1
             },
             'memory': {
-                'total_mb': hw.memory.total_mb or 0
+                'total_mb': snapshot.memory.total_mb or 0
             },
             'gpus': [
                 {
@@ -46,15 +38,21 @@ class DiscoveryEngine(IDiscoveryService):
                     'vram_mb': g.vram_mb,
                     'vendor': g.vendor,
                     'supports_vulkan': g.supports_vulkan
-                } for g in hw.gpus
+                } for g in (snapshot.gpus or [])
             ],
-            'available_backends': backends
+            'storage': [
+                {
+                    'model': s.model,
+                    'size_gb': s.size_gb,
+                    'type': s.type,
+                    'interface': s.interface
+                } for s in (snapshot.storage or [])
+            ],
+            'motherboard': {
+                'model': snapshot.motherboard.model if snapshot.motherboard else 'Unknown',
+                'vendor': snapshot.motherboard.vendor if snapshot.motherboard else 'Unknown'
+            },
+            'available_backends': snapshot.available_backends
         }
         
-        # Extrai o Machine ID com segurança do objeto profile
-        machine_id = "UNKNOWN"
-        if hasattr(self._profile, 'machine_identity') and self._profile.machine_identity:
-            machine_id = self._profile.machine_identity.machine_id
-            
-        logger.info(f"Kernel Discovery: Machine ID: {machine_id}")
         return data

@@ -1,46 +1,31 @@
 import asyncio
-import psutil
 import logging
+import psutil
 from typing import Any
 from .interfaces import ITelemetryService
-# O import mudou de engines.hardware.telemetry.core para .core (mesma pasta)
-from .core import get_gpu_sensors
+from .providers.factory import get_telemetry_provider
 
 logger = logging.getLogger(__name__)
 
 class TelemetryEngine(ITelemetryService):
     def __init__(self):
-        pass
+        # A fábrica decide se vai usar WindowsProvider ou LinuxProvider
+        self.provider = get_telemetry_provider()
 
     async def get_live_metrics(self) -> dict[str, Any]:
         loop = asyncio.get_running_loop()
         
-        # CPU e RAM em thread separada
-        def get_psutil_metrics():
-            cpu_usage = psutil.cpu_percent(interval=None)
-            ram_usage = psutil.virtual_memory()
+        # Roda a coleta de métricas (que é bloqueante) numa thread separada
+        def collect():
+            snapshot = self.provider.get_metrics()
             return {
-                "cpu_usage": cpu_usage,
-                "ram_used_mb": int(ram_usage.used / (1024 * 1024)),
-                "ram_total_mb": int(ram_usage.total / (1024 * 1024))
+                "cpu_usage": snapshot.cpu_usage_percent,
+                "ram_used_mb": snapshot.ram_used_mb,
+                "ram_total_mb": int(psutil.virtual_memory().total / (1024 * 1024)),
+                "gpu_temp": snapshot.gpu_temp_celsius,
+                "gpu_load": snapshot.gpu_load_percent,
+                "gpu_vram_used": snapshot.gpu_vram_used_mb
             }
-        metrics = await loop.run_in_executor(None, get_psutil_metrics)
-        
-        # GPU (via LibreHardwareMonitor - agora lendo do próprio módulo do Kernel)
-        gpu_sensors = {}
-        try:
-            gpu_sensors = await loop.run_in_executor(None, get_gpu_sensors)
-            metrics.update({
-                "gpu_temp": gpu_sensors.get("temperature_celsius"),
-                "gpu_load": gpu_sensors.get("load_percent"),
-                "gpu_vram_used": gpu_sensors.get("vram_used_mb")
-            })
-        except Exception as e:
-            logger.debug(f"Telemetry: GPU sensors indisponíveis - {e}")
-            metrics.update({
-                "gpu_temp": None,
-                "gpu_load": None,
-                "gpu_vram_used": None
-            })
-
+            
+        metrics = await loop.run_in_executor(None, collect)
         return metrics

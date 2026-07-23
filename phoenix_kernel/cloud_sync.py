@@ -2,16 +2,19 @@ import asyncio
 import json
 import logging
 import os
+import uuid
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
-# Onde tudo fica: o flag de consentimento, a credencial do Firebase, e a
-# base de RAG local que vai ser espelhada pro Firestore. Tudo relativo à
-# raiz do projeto (mesmo padrão do LICENSE_ACCEPTED_FLAG no api_server.py).
+# Onde tudo fica: o flag de consentimento, a credencial do Firebase, o id
+# estável da máquina, e a base de RAG local que vai ser espelhada pro
+# Firestore. Tudo relativo à raiz do projeto (mesmo padrão do
+# LICENSE_ACCEPTED_FLAG no api_server.py).
 CONSENT_FLAG_PATH = "data/telemetry_consent.flag"
 CREDENTIALS_PATH = "data/firebase_service_account.json"
 KB_JSON_PATH = "data/knowledge_base.json"
+MACHINE_ID_PATH = "data/machine_id.txt"
 
 FIRESTORE_ROOT_COLLECTION = "phoenix_machines"
 FIRESTORE_SUBCOLLECTION = "knowledge_base"
@@ -36,6 +39,24 @@ def revoke_consent() -> None:
     p = Path(CONSENT_FLAG_PATH)
     if p.exists():
         p.unlink()
+
+
+def get_or_create_machine_id() -> str:
+    """
+    Id estável dessa instalação da Phoenix, só pra separar os dados de cada
+    máquina dentro do mesmo projeto Firestore. Não depende do Discovery
+    (que hoje não gera nenhum identificador próprio) — é um UUID gerado
+    uma vez e salvo localmente; some se você apagar data/machine_id.txt.
+    """
+    p = Path(MACHINE_ID_PATH)
+    if p.exists():
+        existing = p.read_text().strip()
+        if existing:
+            return existing
+    machine_id = str(uuid.uuid4())
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(machine_id)
+    return machine_id
 
 
 class FirestoreSync:
@@ -63,19 +84,19 @@ class FirestoreSync:
         from google.cloud import firestore
         from google.oauth2 import service_account
 
-        # Três formas de fornecer a credencial, nessa ordem — a primeira que
-        # existir é usada:
+        # Três formas de fornecer a credencial, nessa ordem — a primeira
+        # que existir é usada:
         #
         # 1) FIREBASE_SERVICE_ACCOUNT_JSON — variável de ambiente com o
-        #    CONTEÚDO do JSON (não o caminho). É o formato que dá pra colar
-        #    direto numa "Secret" do GitHub Actions ou do HuggingFace Spaces
-        #    — a chave nunca toca o repositório, nem gitignorada.
-        # 2) GOOGLE_APPLICATION_CREDENTIALS — variável de ambiente padrão do
-        #    Google, apontando pro CAMINHO de um arquivo JSON no servidor
-        #    onde estiver rodando (útil em VM/servidor próprio).
-        # 3) O arquivo local (self.credentials_path) — só conveniência pra
+        #    CONTEÚDO do JSON (não o caminho). É o formato pra colar numa
+        #    Secret do GitHub Actions/HuggingFace Spaces — a chave nunca
+        #    toca o repositório.
+        # 2) GOOGLE_APPLICATION_CREDENTIALS — variável de ambiente padrão
+        #    do Google, apontando pro CAMINHO de um arquivo JSON no
+        #    servidor (útil em VM/servidor próprio).
+        # 3) O arquivo local (self.credentials_path) — conveniência pra
         #    rodar na sua máquina em desenvolvimento. Esse caminho tem que
-        #    estar no .gitignore, nunca deve ir pro repositório.
+        #    estar no .gitignore.
         env_json = os.environ.get("FIREBASE_SERVICE_ACCOUNT_JSON")
         env_path = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
 
@@ -149,9 +170,6 @@ class FirestoreSync:
         if pending:
             batch.commit()
 
-        # Carimbo no documento raiz da máquina — dá pra ver no Console do
-        # Firebase quais máquinas estão ativas e quantos docs cada uma tem,
-        # sem precisar abrir a subcoleção inteira.
         client.collection(FIRESTORE_ROOT_COLLECTION).document(machine_id).set(
             {"last_synced_at": firestore.SERVER_TIMESTAMP, "document_count": sent},
             merge=True,

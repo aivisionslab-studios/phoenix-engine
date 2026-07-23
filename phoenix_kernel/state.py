@@ -23,7 +23,6 @@ class StateEngine:
         profile = self.machine_context.profile
         gpu = profile.gpus[0] if profile.gpus else {}
         
-        # Coleta dados de todos os Serviços do Kernel em paralelo
         budget_task = self.budget.evaluate_machine(self.hardware_data)
         telemetry_task = self.telemetry.get_live_metrics()
         env_task = self.services.get_environment_status()
@@ -41,11 +40,11 @@ class StateEngine:
                 "vram_mb": gpu.get('vram_mb', 0),
                 "backends": list(profile.available_backends)
             },
+            "hardware_devices": self.hardware_data,
             "budget": budget_data,
             "telemetry": telemetry_data,
             "environment": env,
             "models": models_data.get("models", []),
             "rag_docs": models_data.get("rag_docs", 0),
-            # Mantemos o score na raiz para não quebrar o HTML atual
             "score": budget_data.get("score", 0) 
         }
