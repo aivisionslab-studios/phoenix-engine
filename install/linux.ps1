@@ -96,8 +96,18 @@ if (-not (Test-Path "./api_server.py")) {
 # so existem no Windows e o import falharia. No Linux a leitura de sensores
 # reais acontece via sysfs (/sys/class/drm, hwmon) e vulkaninfo/lspci.
 Write-Host "`n=== DEPENDENCIAS PYTHON EXCLUSIVAS DO LINUX ===" -ForegroundColor Cyan
-python3 -m pip install --upgrade pip
-pip3 install pyudev
+# Ubuntu 24.04+ marca o Python do sistema como "externally managed" (PEP 668)
+# e bloqueia "pip install" direto (erro: externally-managed-environment).
+# Como essas libs sao utilitarios de sistema (nao o venv da propria Phoenix,
+# que common.ps1 cria depois), instalamos com --break-system-packages.
+python3 -m pip install --upgrade pip --break-system-packages
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "[!] Falha ao atualizar o pip (codigo $LASTEXITCODE). Prosseguindo mesmo assim." -ForegroundColor DarkYellow
+}
+pip3 install pyudev --break-system-packages
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "[!] Falha ao instalar pyudev (codigo $LASTEXITCODE). Prosseguindo mesmo assim." -ForegroundColor DarkYellow
+}
 
 # Self-test de sensores de GPU via sysfs/DRM - equivalente Linux do
 # self-test do LibreHardwareMonitor no Windows. Mesmos 3 checks: GPU

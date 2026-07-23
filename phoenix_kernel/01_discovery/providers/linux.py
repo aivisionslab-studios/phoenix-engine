@@ -1,3 +1,4 @@
+import glob
 import os
 import re
 import json
@@ -97,27 +98,39 @@ def _get_gpu_info() -> list:
         model = f"{vendor_raw} {device_raw}".strip()
         gpus.append({"model": model, "vendor": _classify_vendor(vendor_raw)})
 
+    # Varre TODOS os cards DRM (não só card0..card3) em vez de assumir um
+    # limite fixo. Importante: o índice do card DRM (cardN) não tem
+    # relação garantida com a ordem em que o lspci lista os dispositivos
+    # PCI — numa máquina com GPU integrada + discreta, a AMD pode muito
+    # bem ser card1 (como confirmado em log real de instalação) enquanto
+    # o lspci a lista em primeiro. Por isso a VRAM é atribuída por vendor
+    # (AMD), não pelo índice "primeira GPU da lista".
     vram_mb = 0
-    for card_index in range(4):  # cobre até 4 placas (card0..card3); a maioria das máquinas só tem 1
-        vram_path = f"/sys/class/drm/card{card_index}/device/mem_info_vram_total"
-        if os.path.exists(vram_path):
-            try:
-                with open(vram_path) as f:
-                    vram_mb = int(f.read().strip()) // (1024 * 1024)
+    for vram_path in sorted(glob.glob("/sys/class/drm/card[0-9]*/device/mem_info_vram_total")):
+        try:
+            with open(vram_path) as f:
+                found_vram = int(f.read().strip()) // (1024 * 1024)
+            if found_vram > 0:
+                vram_mb = found_vram
                 break
-            except Exception as e:
-                logger.debug(f"LinuxDiscoveryProvider: falha lendo {vram_path} - {e}")
+        except Exception as e:
+            logger.debug(f"LinuxDiscoveryProvider: falha lendo {vram_path} - {e}")
 
     supports_vulkan = shutil.which("vulkaninfo") is not None
-    return [
-        GPUInfo(
+    result = []
+    amd_vram_assigned = False
+    for g in gpus:
+        gpu_vram = 0
+        if g["vendor"] == "AMD" and not amd_vram_assigned:
+            gpu_vram = vram_mb
+            amd_vram_assigned = True
+        result.append(GPUInfo(
             model=g["model"],
-            vram_mb=vram_mb if i == 0 else 0,  # VRAM total só é confiável pra primeira GPU detectada
+            vram_mb=gpu_vram,
             vendor=g["vendor"],
             supports_vulkan=supports_vulkan,
-        )
-        for i, g in enumerate(gpus)
-    ]
+        ))
+    return result
 
 
 def _get_storage_info() -> list:
