@@ -258,7 +258,7 @@ O catálogo completo (regras de classificação, min VRAM, estratégia de offloa
 2. **Rode o instalador principal** com `pwsh`:
 
    ```bash
-   pwsh ./install_phoenix.ps1
+   sudo pwsh ./install_phoenix.ps1
    ```
 
    O script detecta que está no Linux e chama `install/linux.ps1`, que:
