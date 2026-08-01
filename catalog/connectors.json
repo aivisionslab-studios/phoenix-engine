@@ -1,0 +1,68 @@
+{
+  "ollama": {
+    "name": "Ollama Engine",
+    "provider": "docker",
+    "image": "ollama/ollama:latest",
+    "ports": [
+      "11434:11434"
+    ],
+    "volumes": [
+      "ollama:/root/.ollama"
+    ],
+    "restart": "unless-stopped"
+  },
+  "phoenix_studio": {
+    "name": "Phoenix AI Studio (Local & Cloud)",
+    "provider": "npm",
+    "url": "https://github.com/aivisionslab-studios/phoenix-studio.git",
+    "start_cmd": "npm run dev",
+    "port": 3000
+  },
+  "open-webui": {
+    "name": "Open WebUI (Backup)",
+    "provider": "docker",
+    "image": "ghcr.io/open-webui/open-webui:main",
+    "ports": [
+      "8010:8080"
+    ],
+    "volumes": [
+      "open-webui:/app/backend/data"
+    ],
+    "restart": "unless-stopped",
+    "environment": {
+      "OLLAMA_BASE_URL": "http://host.docker.internal:11434"
+    }
+  },
+  "stable-diffusion.cpp": {
+    "name": "Stable Diffusion.cpp (Vulkan)",
+    "provider": "git",
+    "url": "https://github.com/leejet/stable-diffusion.cpp.git"
+  },
+  "comfyui": {
+    "name": "ComfyUI",
+    "provider": "git",
+    "url": "https://github.com/comfyanonymous/ComfyUI.git"
+  },
+  "llama.cpp": {
+    "name": "llama.cpp (Vulkan)",
+    "provider": "git",
+    "url": "https://github.com/ggml-org/llama.cpp.git",
+    "recipe": "compile_llama_vulkan",
+    "description": "Motor de inferência nativo. Clonado do GitHub e compilado com Vulkan durante o bootstrap. Nao precisa de download manual."
+  },
+  "lm_studio": {
+    "name": "LM Studio",
+    "provider": "winget",
+    "winget_id": "ElementLabs.LMStudio"
+  },
+  "openai_api": {
+    "name": "OpenAI API Client",
+    "provider": "pip",
+    "pip_package": "openai"
+  },
+  "mcp": {
+    "name": "Model Context Protocol (MCP)",
+    "provider": "pip",
+    "pip_package": "mcp"
+  }
+}

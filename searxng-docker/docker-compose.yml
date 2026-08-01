@@ -1,0 +1,21 @@
+services:
+  searxng-phoenix:
+    container_name: searxng-phoenix
+    image: searxng/searxng:latest
+    ports: ["8080:8080"]
+    volumes: ["./searxng-phoenix:/etc/searxng:rw"]
+    environment:
+      - SEARXNG_HOSTNAME=localhost:8080/
+      - SEARXNG_BIND_ADDRESS=0.0.0.0
+      - FORCE_OWNERSHIP=true
+    restart: unless-stopped
+  searxng-webui:
+    container_name: searxng-webui
+    image: searxng/searxng:latest
+    ports: ["8088:8080"]
+    volumes: ["./searxng-webui:/etc/searxng:rw"]
+    environment:
+      - SEARXNG_HOSTNAME=localhost:8088/
+      - SEARXNG_BIND_ADDRESS=0.0.0.0
+      - FORCE_OWNERSHIP=true
+    restart: unless-stopped

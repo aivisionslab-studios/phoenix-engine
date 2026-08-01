@@ -1,0 +1,73 @@
+{
+  "memory_type": "machine_experience",
+  "entity": "aivisionslab_studio_rig",
+  "last_updated": "2026-06-16",
+  "hardware": {
+    "cpu": {
+      "model": "Intel Xeon E5-2690 v3",
+      "cores": 12,
+      "threads": 24,
+      "turbo_ghz": 3.05,
+      "release_year": 2014
+    },
+    "ram": {
+      "capacity_gb": 31.8,
+      "type": "DDR4 REG ECC",
+      "channels": "quad-channel"
+    },
+    "gpu": {
+      "model": "AMD Radeon RX 580 2048SP",
+      "vram_gb": 8,
+      "vram_type": "GDDR5",
+      "release_year": 2017,
+      "vram_bandwidth_gbps": 400,
+      "rocm_support": false,
+      "notes": "GCN4/Polaris — sem suporte oficial no ROCm SDK atual. Vulkan é o único backend GPU viável para IA."
+    },
+    "storage": {
+      "nvme_ssd": {
+        "drive_letter_windows": "E:",
+        "use": "modelos GGUF, builds",
+        "read_speed_gbps": "1.7-3.5"
+      },
+      "hdd_c": {
+        "use": "sistema Windows + swap",
+        "notes": "gargalo de I/O quando RAM estoura para swap"
+      },
+      "hdd_d": {
+        "use": "arquivos secundários"
+      },
+      "linux_partition": {
+        "size_gb": 97,
+        "filesystem": "ext4",
+        "device": "/dev/sdb6",
+        "mode": "dual boot dedicado"
+      }
+    }
+  },
+  "operating_systems": [
+    {
+      "os": "Windows 11 Professional",
+      "driver": "AMD Adrenalin 31.0.21925.1001 (2026-05-20)",
+      "directx": "12 (Feature Level 12.0)",
+      "notes": "WSL2 disponível mas NÃO expõe a RX 580 via Vulkan — usar sempre PowerShell/CMD nativo para GPU."
+    },
+    {
+      "os": "Ubuntu 26.04 LTS (Resolute Raccoon)",
+      "kernel": "7.0",
+      "driver": "Mesa RADV 26.0.3",
+      "vulkan_core_version": "1.4.341",
+      "mode": "bare-metal, dual boot com Windows",
+      "incident_history": [
+        "2026-06-16: partição de 97GB ficou 100% cheia durante download de modelos GGUF pesados, causando corrupção do GNOME (loop de login, tela preta). Recuperado via formatação e reinstalação limpa."
+      ]
+    }
+  ],
+  "software_stack": {
+    "llama_cpp_build": "b9049-2496f9c14",
+    "compiler_windows": "MSVC 14.51.36231 / 14.52.36328 (VS 2026 Build Tools)",
+    "vulkan_sdk": "1.4.350.0",
+    "openwebui": "v0.9.6",
+    "docker_containers": ["open-webui (3000->8080)", "portainer (9000)", "searxng (8080)"]
+  }
+}

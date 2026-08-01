@@ -1,0 +1,107 @@
+{
+  "qwen3:8b": {
+    "name": "Qwen3 8B Instruct (GGUF Q4_K_M)",
+    "url": "https://huggingface.co/Qwen/Qwen3-8B-GGUF/resolve/main/Qwen3-8B-Q4_K_M.gguf",
+    "type": "llm",
+    "architecture": "Qwen3",
+    "parameters": "8B",
+    "quantization": "Q4_K_M",
+    "size_gb": 5.03,
+    "min_vram_gb": 6,
+    "context_length": 32768,
+    "tags": ["chat", "reasoning", "coding", "portuguese"],
+    "license": "Apache 2.0",
+    "backend": ["vulkan", "cpu"],
+    "tok_s_rx580": 9.0,
+    "description": "Modelo principal da Phoenix. Excelente raciocinio e suporte a portugues. Roda fluido na RX 580 via Vulkan.",
+    "destination_folder": "Chat/GGUF",
+    "filename": "qwen3-8b-q4_k_m.gguf"
+  },
+  "mistral7b": {
+    "name": "Mistral 7B Instruct v0.3 (GGUF Q4_K_M)",
+    "url": "https://huggingface.co/QuantFactory/Mistral-7B-Instruct-v0.3-GGUF/resolve/main/Mistral-7B-Instruct-v0.3.Q4_K_M.gguf",
+    "type": "llm",
+    "architecture": "Mistral",
+    "parameters": "7B",
+    "quantization": "Q4_K_M",
+    "size_gb": 4.37,
+    "min_vram_gb": 6,
+    "context_length": 32768,
+    "tags": ["chat", "reasoning", "fast"],
+    "license": "Apache 2.0",
+    "backend": ["vulkan", "cpu"],
+    "tok_s_rx580": 17.77,
+    "description": "O modelo mais rapido testado na RX 580. 100% GPU Vulkan. Ideal para tarefas gerais.",
+    "destination_folder": "Chat/GGUF",
+    "filename": "mistral-7b-instruct-v0.3.Q4_K_M.gguf"
+  },
+  "llama3.2:3b": {
+    "name": "Llama 3.2 3B Instruct (GGUF Q4_K_M)",
+    "url": "https://huggingface.co/bartowski/Llama-3.2-3B-Instruct-GGUF/resolve/main/Llama-3.2-3B-Instruct-Q4_K_M.gguf",
+    "type": "llm",
+    "architecture": "Llama3.2",
+    "parameters": "3B",
+    "quantization": "Q4_K_M",
+    "size_gb": 2.02,
+    "min_vram_gb": 3,
+    "context_length": 131072,
+    "tags": ["chat", "fast", "small", "portuguese"],
+    "license": "Llama 3.2 Community License",
+    "backend": ["vulkan", "cpu"],
+    "tok_s_rx580": null,
+    "description": "Modelo pequeno e rapido, bom para respostas curtas/tarefas leves quando o Qwen3/Mistral seriam overkill. Repo mantido por bartowski, quant Q4_K_M confirmada.",
+    "destination_folder": "Chat/GGUF",
+    "filename": "llama-3.2-3b-instruct-q4_k_m.gguf"
+  },
+  "flux": {
+    "name": "FLUX.1-schnell (GGUF Q4_0) - leejet",
+    "url": "https://huggingface.co/leejet/FLUX.1-schnell-gguf/resolve/main/flux1-schnell-q4_0.gguf",
+    "type": "image",
+    "architecture": "FLUX",
+    "parameters": "12B",
+    "quantization": "Q4_0",
+    "size_gb": 6.88,
+    "min_vram_gb": 6,
+    "tags": ["image-gen", "high-quality", "schnell", "sd.cpp"],
+    "license": "Apache 2.0 (Schnell)",
+    "backend": ["vulkan"],
+    "tok_s_rx580": null,
+    "destination_folder": "Image/Flux",
+    "filename": "flux1-schnell-q4_0.gguf",
+    "components": {
+      "clip_l": {
+        "url": "https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/clip_l.safetensors",
+        "filename": "clip_l.safetensors",
+        "note": "Repo oficial ComfyOrg. Sem login. 246 MB."
+      },
+      "t5xxl": {
+        "url": "https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/t5xxl_fp16.safetensors",
+        "filename": "t5xxl_fp16.safetensors",
+        "note": "Repo oficial ComfyOrg. Sem login. 9.79 GB. Existe tambem t5xxl_fp8_e4m3fn.safetensors (4.89 GB) no mesmo repo, mais leve para a RX 580 se a VRAM apertar."
+      },
+      "vae": {
+        "url": "https://huggingface.co/ffxvs/vae-flux/resolve/main/ae.safetensors",
+        "filename": "ae.safetensors",
+        "note": "ATENCAO: o VAE oficial (black-forest-labs/FLUX.1-schnell/ae.safetensors) e um repo GATED - precisa de login + aceitar licenca + token HF, senao da 401. Este mirror (ffxvs/vae-flux) e publico e sem login. Se preferir o oficial, o ModelManager precisa suportar Authorization: Bearer <HF_TOKEN>."
+      }
+    },
+    "description": "Modelo de geracao de imagem de altissima qualidade. Repo leejet homologado para stable-diffusion.cpp."
+  },
+  "sd15": {
+    "name": "DreamShaper 8 LCM (SD 1.5 GGUF)",
+    "url": "https://huggingface.co/stduhpf/dreamshaper-8LCM-im-GGUF-sdcpp/resolve/main/dreamshaper-8-lcm-IQ4_NL.gguf",
+    "type": "image",
+    "architecture": "SD1.5",
+    "parameters": "1B",
+    "quantization": "IQ4_NL",
+    "size_gb": 1.57,
+    "min_vram_gb": 2,
+    "tags": ["image-gen", "fast", "legacy", "sd.cpp"],
+    "license": "CreativeML OpenRAIL-M",
+    "backend": ["vulkan"],
+    "tok_s_rx580": null,
+    "destination_folder": "Image/StableDiffusion",
+    "filename": "dreamshaper-8-lcm-IQ4_NL.gguf",
+    "description": "O classico SD 1.5 pre-convertido para sd.cpp. Ultra rapido na RX 580."
+  }
+}

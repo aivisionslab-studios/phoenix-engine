@@ -1,0 +1,96 @@
+# ============================================================
+# CREDENCIAIS E SEGREDOS — nunca commitar, nunca subir pra público
+# ============================================================
+data/firebase_service_account.json
+data/config/firestore_credentials.json
+*firebase_service_account*.json
+*service_account*.json
+*.pem
+*.key
+.env
+.env.*
+
+# ============================================================
+# Estado local de consentimento/licença/máquina — é uma escolha da 
+# MÁQUINA de quem roda, não faz parte do código-fonte do projeto.
+# ============================================================
+data/telemetry_consent.flag
+data/license_accepted.flag
+data/config/machine_id.json
+data/machine_id.txt
+
+# ============================================================
+# ChromaDB (banco vetorial local do RAG) — binário, gerado localmente a
+# partir de data/knowledge_base.json. Não precisa (e não deve) ir pro repo.
+# ============================================================
+data/chroma_db/
+
+# ============================================================
+# Bancos de dados de instância — telemetria e estado de máquina real,
+# não fixtures do projeto. Regenerados automaticamente em runtime.
+# ============================================================
+data/hardware.db
+data/knowledge.db
+
+# ============================================================
+# Cache de runtime / logs — gerado em execução, não é código-fonte.
+# ============================================================
+data/models_cache/
+data/logs/
+/logs/
+*.log
+
+# ============================================================
+# Repos de terceiros e Modelos Pesados — clonados/baixados pelo instalador.
+# ============================================================
+repos/
+output/
+*.gguf
+
+# ============================================================
+# Módulos descontinuados — não deve ir pro release público.
+# ============================================================
+_deprecated/
+
+# ============================================================
+# Lixo acidental do Windows Explorer
+# ============================================================
+Novo*Documento*de*Texto*.txt
+*/Novo\(a\)*Documento*de*Texto*.txt
+
+# ============================================================
+# Python
+# ============================================================
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.venv/
+venv/
+env/
+build/
+dist/
+
+# ============================================================
+# Node.js / Phoenix Studio (apenas se rodar local na raiz)
+# ============================================================
+node_modules/
+web/platform_dist/
+
+# ============================================================
+# Editor / SO
+# ============================================================
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+data/config/machine.json
+searxng-docker/searxng-phoenix/settings.yml
+searxng-docker/searxng-webui/settings.yml
+
+
+data/config/machine.json
+searxng-docker/searxng-phoenix/settings.yml
+searxng-docker/searxng-webui/settings.yml
+
