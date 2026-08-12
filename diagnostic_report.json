@@ -1,0 +1,54 @@
+{
+  "timestamp": "2026-08-03T09:01:55.633453",
+  "machine": "AIVisionsLab",
+  "os": "Windows",
+  "python_version": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+  "steps": [
+    {
+      "component": "Imports",
+      "status": "OK",
+      "details": "phoenix_kernel.kernel"
+    },
+    {
+      "component": "Imports",
+      "status": "OK",
+      "details": "phoenix_kernel.state"
+    },
+    {
+      "component": "Imports",
+      "status": "OK",
+      "details": "phoenix_kernel.cloud_sync"
+    },
+    {
+      "component": "Imports",
+      "status": "OK",
+      "details": "phoenix_kernel.discovery.engine"
+    },
+    {
+      "component": "Imports",
+      "status": "OK",
+      "details": "phoenix_kernel.telemetry.core"
+    },
+    {
+      "component": "Database",
+      "status": "OK",
+      "details": "chroma.sqlite3 - 21 tabelas"
+    },
+    {
+      "component": "Discovery",
+      "status": "OK",
+      "details": "Hardware descoberto"
+    },
+    {
+      "component": "StateEngine",
+      "status": "OK",
+      "details": "Estado gerado com sucesso"
+    },
+    {
+      "component": "CloudSync:Firebase",
+      "status": "OK",
+      "details": "Documento enviado/tracing concluído"
+    }
+  ],
+  "errors": []
+}

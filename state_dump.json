@@ -1,0 +1,88 @@
+{
+  "hardware": {
+    "cpu": "Intel(R) Xeon(R) CPU E5-2690 v3 @ 2.60GHz",
+    "ram_mb": 32608,
+    "gpu": "AMD Radeon RX 580 2048SP",
+    "vram_mb": 8192,
+    "backends": [
+      "cpu",
+      "vulkan"
+    ]
+  },
+  "hardware_devices": {
+    "os": {
+      "system": "Windows",
+      "release": "11",
+      "machine": "AMD64",
+      "processor": "Intel(R) Xeon(R) CPU E5-2690 v3 @ 2.60GHz"
+    },
+    "cpu": {
+      "model": "Intel(R) Xeon(R) CPU E5-2690 v3 @ 2.60GHz",
+      "cores": 12
+    },
+    "memory": {
+      "total_mb": 32608
+    },
+    "gpus": [
+      {
+        "model": "AMD Radeon RX 580 2048SP",
+        "vram_mb": 8192,
+        "vendor": "AMD",
+        "supports_vulkan": true
+      }
+    ],
+    "storage": [
+      {
+        "model": "WDC WD20EJRX-89AKWY0",
+        "size_gb": 1863.0,
+        "type": "HDD",
+        "interface": "SCSI"
+      },
+      {
+        "model": "ORICO V500 256GB",
+        "size_gb": 238.5,
+        "type": "HDD",
+        "interface": "SCSI"
+      },
+      {
+        "model": "WDC WD10EJRX-89N74Y0",
+        "size_gb": 931.5,
+        "type": "HDD",
+        "interface": "SCSI"
+      }
+    ],
+    "motherboard": {
+      "model": "X99-MR9A-PRO ",
+      "vendor": "MACHINIST"
+    },
+    "available_backends": [
+      "cpu",
+      "vulkan"
+    ]
+  },
+  "budget": {
+    "score": 95,
+    "class": "Medium"
+  },
+  "telemetry": {
+    "cpu_usage": 5.5,
+    "ram_used_mb": 12517,
+    "ram_total_mb": 32608,
+    "gpu_temp": 38.0,
+    "gpu_load": 0.0,
+    "gpu_vram_used": 785.0
+  },
+  "environment": {
+    "docker": true,
+    "python": true,
+    "vulkan": true,
+    "llama_cpp": true,
+    "stable_diffusion_cpp": true,
+    "ollama": false,
+    "openai": false,
+    "mcp": false
+  },
+  "models": [],
+  "rag_docs": 0,
+  "score": 95
+}

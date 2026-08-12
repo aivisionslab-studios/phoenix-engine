@@ -1,0 +1,24 @@
+# PHX-FIX (auditoria 2026-08-04): este arquivo só tinha google-cloud-firestore
+# e google-auth - nenhuma das outras dependências reais do projeto (fastapi,
+# chromadb, etc) estava listada aqui. O instalador (install/common.ps1) não
+# lê este arquivo - ele faz `pip install fastapi uvicorn ...` direto - então
+# isso não travava a instalação via Iniciar_Phoenix.bat, mas qualquer setup
+# manual, CI ou container que confie em `pip install -r requirements.txt`
+# como fonte da verdade ficava com o projeto incompleto e quebrando em
+# runtime com ModuleNotFoundError.
+
+fastapi>=0.110.0
+uvicorn>=0.29.0
+python-multipart>=0.0.9
+psutil>=5.9.0
+chromadb>=0.5.0
+astor>=0.8.1
+httpx>=0.27.0
+google-cloud-firestore>=2.21.0
+google-auth>=2.40.0
+
+# Windows apenas (sensores de hardware / WMI) - ver install/windows.ps1
+pywin32>=306; sys_platform == "win32"
+WMI>=1.5.1; sys_platform == "win32"
+pythonnet>=3.0.3; sys_platform == "win32"
+HardwareMonitor>=1.0; sys_platform == "win32"

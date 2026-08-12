@@ -1,0 +1,16 @@
+PATCH MANUAL NECESSARIO: phoenix_kernel/runtime/engine.py
+===========================================================
+Gerado por setup_vision.py em 2026-08-03T19:03:48
+
+O script nao conseguiu localizar automaticamente os pontos de insercao
+neste arquivo (ele pode nao existir ainda, ou o codigo mudou desde a
+ultima vez). Faca as duas edicoes abaixo manualmente:
+
+1) No topo do arquivo, junto aos outros imports de driver, adicione:
+
+   from .drivers.mtmd_driver import MtmdDriver  # Visao nativa (setup_vision.py)
+
+2) No metodo que registra os drivers (procure por algo como
+   self._drivers["sdxl"] = SdCppDriver(...)), adicione logo depois:
+
+   self._drivers["vision"] = MtmdDriver()  # Driver de visao (setup_vision.py)

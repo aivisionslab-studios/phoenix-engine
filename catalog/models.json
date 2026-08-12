@@ -1,0 +1,88 @@
+{
+  "_comment": "Catálogo de capacidades da Phoenix Engine. Cada modelo declara 'roles' (que capacidades ele cobre) e opcionalmente aparece em 'default_for_roles' (qual role ele resolve quando ninguém pede um modelo específico). O ModelRegistry (phoenix_kernel/models/registry.py) lê este arquivo - nenhum nome de modelo deve ficar hardcoded em resident_manager.py/reasoning_engine.py/api_server.py depois da Fase 2. file_patterns é usado só para casar um 'hint' de texto (ex: usuário digitou 'sdxl') com uma entrada aqui - não tem relação com o scan de disco, que continua sendo feito por _resolve_image_model_target/_resolve_voice_target.",
+
+  "roles": [
+    "chat",
+    "reasoning",
+    "code",
+    "document_understanding",
+    "vision",
+    "image_generation",
+    "speech_synthesis"
+  ],
+
+  "models": [
+    {
+      "id": "qwen3:8b",
+      "runtime": "llama.cpp",
+      "roles": ["chat", "reasoning", "document_understanding"],
+      "default_for_roles": ["chat", "reasoning", "document_understanding"],
+      "file_patterns": ["qwen3-8b", "qwen3_8b", "qwen3:8b"],
+      "vram_mb_estimate": 0,
+      "notes": "Modelo de texto padrão da Phoenix. Roda em CPU por decisão de design (GPU fica livre para imagem) - vram_mb_estimate=0 reflete isso; se o perfil de execução mudar para GPU no futuro, ajustar aqui."
+    },
+    {
+      "id": "qwen2.5-coder:32b",
+      "runtime": "llama.cpp",
+      "roles": ["code"],
+      "default_for_roles": ["code"],
+      "file_patterns": ["qwen2.5-coder", "qwen2_5-coder", "coder-32b"],
+      "vram_mb_estimate": 0,
+      "notes": "Alternativa para tarefas de código - referenciada no SYSTEM_PROMPT do ReasoningEngine, ainda não baixada por padrão."
+    },
+    {
+      "id": "deepseek-r1:8b",
+      "runtime": "llama.cpp",
+      "roles": ["reasoning"],
+      "default_for_roles": [],
+      "file_patterns": ["deepseek-r1", "deepseek_r1"],
+      "vram_mb_estimate": 0,
+      "notes": "Alternativa para raciocínio complexo - referenciada no SYSTEM_PROMPT do ReasoningEngine, não é default (qwen3:8b continua sendo o default de 'reasoning')."
+    },
+    {
+      "id": "minicpmv",
+      "runtime": "vision",
+      "roles": ["vision"],
+      "default_for_roles": ["vision"],
+      "file_patterns": ["minicpm-v", "minicpmv", "minicpm_v"],
+      "vram_mb_estimate": 6500,
+      "notes": "Único modelo de visão da Golden Baseline. Roteia pro driver 'vision' (MiniCPM-V via llama-mtmd-cli). vram_mb_estimate baseado no tamanho do .gguf validado nos benchmarks (~6.07GB modelo + ~0.97GB mmproj)."
+    },
+    {
+      "id": "flux",
+      "runtime": "sdxl",
+      "roles": ["image_generation"],
+      "default_for_roles": ["image_generation"],
+      "file_patterns": ["flux"],
+      "vram_mb_estimate": 6500,
+      "notes": "Default de geração de imagem. 'runtime: sdxl' é o alias fixo que roteia pro SdCppDriver, independente do modelo (flux/sdxl/sd15 usam o mesmo runtime). vram_mb_estimate baseado no split híbrido validado nos benchmarks (Flux Schnell Q4_K_S ~6.5GB GPU + resto em CPU/RAM)."
+    },
+    {
+      "id": "sdxl",
+      "runtime": "sdxl",
+      "roles": ["image_generation"],
+      "default_for_roles": [],
+      "file_patterns": ["sdxl", "xl-base", "xl_base"],
+      "vram_mb_estimate": 6400,
+      "notes": "Alternativa de imagem - não é default (Flux é). vram_mb_estimate baseado no benchmark SDXL 1.0 1024x1024 validado (~6.4GB)."
+    },
+    {
+      "id": "sd15",
+      "runtime": "sdxl",
+      "roles": ["image_generation"],
+      "default_for_roles": [],
+      "file_patterns": ["dreamshaper", "sd15", "sd-1", "sd1.5", "sd_1_5"],
+      "vram_mb_estimate": 2000,
+      "notes": "Alternativa de imagem mais leve - não é default. vram_mb_estimate baseado no benchmark SD 1.5 validado (~2GB)."
+    },
+    {
+      "id": "pt_BR-faber-medium",
+      "runtime": "piper",
+      "roles": ["speech_synthesis"],
+      "default_for_roles": ["speech_synthesis"],
+      "file_patterns": ["faber", "pt_br-faber", "pt-br-faber"],
+      "vram_mb_estimate": 0,
+      "notes": "Voz padrão em português da Golden Baseline. Piper roda em CPU."
+    }
+  ]
+}

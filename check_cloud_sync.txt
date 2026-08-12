@@ -1,0 +1,32 @@
+            # TESTE DE LEITURA: Verifica se o documento realmente foi gravado
+            p("FLOW", "Tentando ler o documento recém-enviado do Firestore...")
+            try:
+                # Importa as configurações exatas usadas na escrita
+                from phoenix_kernel.cloud_sync import MACHINE_ID_FILE, FIRESTORE_CREDENTIALS
+                import firebase_admin
+                from firebase_admin import credentials, firestore
+
+                # Inicializa o cliente (se já estiver inicializado, usa o existente)
+                if not firebase_admin._apps:
+                    cred = credentials.Certificate(str(FIRESTORE_CREDENTIALS))
+                    firebase_admin.initialize_app(cred)
+                
+                db = firestore.client()
+                machine_id = MACHINE_ID_FILE.read_text().strip()
+                
+                # Tenta ler o documento na mesma coleção que o sync_machine_state usa
+                # (Substitua 'phoenix_machines' pelo nome real da coleção se for diferente no seu cloud_sync.py)
+                doc_ref = db.collection('phoenix_machines').document(machine_id)
+                doc = doc_ref.get()
+                
+                if doc.exists:
+                    p("OK", f"DOCUMENTO ENCONTRADO NO FIRESTORE! ID: {machine_id}")
+                    p("INFO", f"Dados no Firestore: {doc.to_dict().get('hardware', 'N/A')}")
+                    self.add_step("CloudSync:ReadTest", "OK", "Documento lido com sucesso do Firebase")
+                else:
+                    p("FAIL", "Documento NÃO encontrado no Firestore após a escrita!")
+                    self.add_step("CloudSync:ReadTest", "FAIL", "Documento não existe no banco")
+                    
+            except Exception as e:
+                p("FAIL", f"Erro ao tentar LER do Firestore: {str(e)}")
+                self.add_step("CloudSync:ReadTest", "FAIL", str(e))

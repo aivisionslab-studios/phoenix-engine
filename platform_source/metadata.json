@@ -1,0 +1,6 @@
+{
+  "name": "Phoenix Aviary Platform v3.0",
+  "description": "Platform for managing, testing, and chatting with local (Ollama, LM Studio, llama-server, vLLM, Phoenix Engine) and cloud LLM providers.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,6 @@
+{
+  "generated_at": "2026-08-05T07:47:47.4302214-03:00",
+  "preferred_llm_engine": "ollama",
+  "llama_server_bin": null,
+  "llama_cpp_build_ok": false
+}
